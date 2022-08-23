@@ -1,6 +1,7 @@
 package hokm
 
 import (
+	"errors"
 	"game/model"
 	"math/rand"
 )
@@ -60,8 +61,11 @@ func (g *game) DealCards() {
 	}
 }
 
-func (g *game) PlayCard(c *model.Card) {
+func (g *game) PlayCard(c *model.Card) error {
 	// check card validity
+	if !g.isCardValid(c) {
+		return errors.New("card is invalid")
+	}
 
 	// add card to deck
 	g.desk.Add(c, g.turn)
@@ -72,16 +76,19 @@ func (g *game) PlayCard(c *model.Card) {
 		g.turnResult()
 	}
 
-	// add turn
+	// add turn. turn start from leaderPos and go to len(players) - 1 and then restarted to 0
 
+	return nil
 }
 
-func (g *game) isCardValid(c *model.Card) {
-	// get desk suit
+func (g *game) isCardValid(c *model.Card) bool {
+	deskSuit := g.desk.GetSuit()
 
-	// if suits equal return true
+	if deskSuit == c.Suit {
+		return true
+	}
 
-	// check rad karde
+	return !g.players[g.turn].Hand.HasSuit(deskSuit)
 }
 
 func (g *game) turnResult() {
