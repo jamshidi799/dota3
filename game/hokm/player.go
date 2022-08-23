@@ -1,15 +1,16 @@
 package hokm
 
 type Player struct {
-	ID            string
+	Team          int
 	position      int
 	Hand          *Hand
 	IsTrumpCaller bool
 }
 
-func NewPlayer(id string) *Player {
+func NewPlayer(position, team int) *Player {
 	return &Player{
-		ID:            id,
+		Team:          team,
+		position:      position,
 		Hand:          NewHand(),
 		IsTrumpCaller: false,
 	}

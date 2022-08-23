@@ -1,53 +1,70 @@
 package hokm
 
-import "game/model"
+import (
+	"game/model"
+	"math/rand"
+)
 
 type game struct {
-	deck  *model.Deck
-	team1 *Team
-	team2 *Team
-	desk  *Desk
+	deck    *model.Deck
+	desk    *Desk
+	players map[int]*Player
 
 	turn      int
 	leaderPos int
 	trump     model.Suit
+	score     Score
 }
 
-func NewGame(team1, team2 *Team) *game {
+func NewGame(players [4]*Player) *game {
 	// init deck
 	deck := model.NewDeck()
 
 	desk := NewDesk()
 
+	playerMap := map[int]*Player{}
+	for _, player := range players {
+		playerMap[player.position] = player
+	}
+
 	return &game{
-		deck:  deck,
-		team1: team1,
-		team2: team2,
-		desk:  desk,
+		deck:    deck,
+		desk:    desk,
+		players: playerMap,
 	}
 }
 
 func (g *game) Start() {
 	// shuffle
+	g.deck.Shuffle()
 
 	// set trump-caller
+	g.leaderPos = rand.Intn(4)
 
 	// deal first 5 card to trump-caller
+	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(5))
 }
 
 func (g *game) SetTrump(suit model.Suit) {
-
+	g.trump = suit
 }
 
 func (g *game) DealCards() {
 	// deal remained cards
+	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(8))
+
+	for i := 0; i < 4; i++ {
+		if i != g.leaderPos {
+			g.players[i].Hand.SetCards(g.deck.Pop(13))
+		}
+	}
 }
 
 func (g *game) PlayCard(c *model.Card) {
 	// check card validity
 
 	// add card to deck
-	g.desk.Add(c)
+	g.desk.Add(c, g.turn)
 
 	// check desk is full
 	if g.desk.IsFull() {
@@ -75,4 +92,6 @@ func (g *game) turnResult() {
 	// add score
 
 	// set new leaderPos
+
+	// refresh desk
 }

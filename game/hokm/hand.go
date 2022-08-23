@@ -10,7 +10,8 @@ func NewHand() *Hand {
 	return &Hand{}
 }
 
-func (h *Hand) SetCards(cs []model.Card) {}
+func (h *Hand) SetCards(cs []model.Card) {
+}
 
 func (h *Hand) PopCard(i int) (*model.Card, bool) {
 	return nil, true

@@ -4,9 +4,13 @@ import "game/model"
 
 func Run() error {
 	// init teams
+	//team1 := NewTeam()
+	//team2 := NewTeam()
+
+	players := [4]*Player{}
 
 	// init game
-	g := NewGame(nil, nil)
+	g := NewGame(players)
 
 	g.Start()
 
