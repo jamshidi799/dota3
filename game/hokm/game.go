@@ -68,12 +68,11 @@ func (g *game) PlayCard(c *model.Card) error {
 	}
 
 	// add card to deck
-	g.desk.Add(c, g.turn)
+	g.desk.Add(c)
 
 	// check desk is full
 	if g.desk.IsFull() {
-		// if true: compute score
-		g.turnResult()
+		g.calculateTurnResult()
 	}
 
 	// add turn. turn start from leaderPos and go to len(players) - 1 and then restarted to 0
@@ -91,14 +90,35 @@ func (g *game) isCardValid(c *model.Card) bool {
 	return !g.players[g.turn].Hand.HasSuit(deskSuit)
 }
 
-func (g *game) turnResult() {
-	// get desk cards
+func (g *game) calculateTurnResult() {
+
+	maxCard := g.desk.cards[0]
+	maxIndex := g.leaderPos
+
+	for i, deskCard := range g.desk.cards[1:] {
+		if maxCard.Suit == deskCard.Suit && maxCard.Rank < deskCard.Rank {
+			maxCard = deskCard
+			maxIndex = i
+		} else if deskCard.Suit == g.trump {
+			maxCard = deskCard
+			maxIndex = i
+		}
+	}
 
 	// get winner pos
+	winnerPos := (maxIndex + g.leaderPos) % 4
 
 	// add score
+	winnerTeam := g.players[winnerPos].Team
+	if winnerTeam == FirstTeam {
+		g.score.FirstTeam += 1
+	} else {
+		g.score.SecondTeam += 1
+	}
 
 	// set new leaderPos
+	g.leaderPos = winnerPos
 
 	// refresh desk
+	g.desk = NewDesk()
 }

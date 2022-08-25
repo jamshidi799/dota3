@@ -1,7 +1,7 @@
 package hokm
 
 type Player struct {
-	Team          int
+	Team          Team
 	position      int
 	Hand          *Hand
 	IsTrumpCaller bool
@@ -9,7 +9,7 @@ type Player struct {
 
 func NewPlayer(position, team int) *Player {
 	return &Player{
-		Team:          team,
+		Team:          Team(team),
 		position:      position,
 		Hand:          NewHand(),
 		IsTrumpCaller: false,

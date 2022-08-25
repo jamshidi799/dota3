@@ -1,11 +1,8 @@
 package hokm
 
-type Team struct {
-	Score int
-}
+type Team int
 
-func NewTeam() *Team {
-	return &Team{
-		Score: 0,
-	}
-}
+const (
+	FirstTeam Team = iota + 1
+	SecondTeam
+)

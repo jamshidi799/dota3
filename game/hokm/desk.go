@@ -3,30 +3,25 @@ package hokm
 import "game/model"
 
 type Desk struct {
-	cards []*DeskCard
-}
-
-type DeskCard struct {
-	card     *model.Card
-	playerId int
+	cards []*model.Card
 }
 
 func NewDesk() *Desk {
-	return &Desk{cards: []*DeskCard{}}
+	return &Desk{cards: []*model.Card{}}
 }
 
-func (d *Desk) Add(card *model.Card, playerId int) {
-	d.cards = append(d.cards, &DeskCard{card, playerId})
+func (d *Desk) Add(card *model.Card) {
+	d.cards = append(d.cards, card)
 }
 
 func (d *Desk) IsFull() bool {
 	return len(d.cards) == 4
 }
 
-func (d *Desk) GetCards() []*DeskCard {
+func (d *Desk) GetCards() []*model.Card {
 	return d.cards
 }
 
 func (d *Desk) GetSuit() model.Suit {
-	return d.cards[0].card.Suit
+	return d.cards[0].Suit
 }
