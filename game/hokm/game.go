@@ -42,6 +42,7 @@ func (g *game) Start() {
 	// set trump-caller
 	g.leaderPos = rand.Intn(4)
 	g.players[g.leaderPos].IsTrumpCaller = true
+	g.turn = g.leaderPos
 
 	// deal first 5 card to trump-caller
 	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(5))
@@ -57,7 +58,7 @@ func (g *game) SetTrump(suit model.Suit) {
 
 func (g *game) DealCards() {
 	// deal remained cards
-	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(8))
+	g.players[g.leaderPos].Hand.AppendCards(g.deck.Pop(8))
 
 	for i := 0; i < 4; i++ {
 		if i != g.leaderPos {
@@ -74,6 +75,7 @@ func (g *game) PlayCard(c *model.Card) error {
 
 	// add card to deck
 	g.desk.Add(c)
+	g.players[g.turn].Hand.DeleteCard(c.GetInt())
 
 	// check desk is full
 	if g.desk.IsFull() {
@@ -87,6 +89,10 @@ func (g *game) PlayCard(c *model.Card) error {
 }
 
 func (g *game) isCardValid(c *model.Card) bool {
+	if len(g.desk.cards) == 0 {
+		return true
+	}
+
 	deskSuit := g.desk.GetSuit()
 
 	if deskSuit == c.Suit {

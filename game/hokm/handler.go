@@ -29,10 +29,6 @@ func Run() error {
 	// deal
 	g.DealCards()
 
-	fmt.Printf("%+v\n", g.deck.Pop(5))
-
-	fmt.Printf("%+v", g.players[g.leaderPos].Hand.cards)
-
 	// play card in loop
 	for !g.isGameEnded() {
 		i := 0
