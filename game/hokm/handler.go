@@ -1,11 +1,11 @@
 package hokm
 
-import "game/model"
+import (
+	"game/model"
+	"log"
+)
 
 func Run() error {
-	// init teams
-	//team1 := NewTeam()
-	//team2 := NewTeam()
 
 	players := [4]*Player{}
 
@@ -14,16 +14,30 @@ func Run() error {
 
 	g.Start()
 
-	// get trump-caller
-
 	// set trump
 	g.SetTrump(model.DIAMOND)
 
 	// deal
+	g.DealCards()
 
 	// play card in loop
+	for g.isGameEnded() {
+		for i := 0; i < 4; i++ {
+			err := g.PlayCard(&model.Card{})
+			if err != nil {
+				return err // todo: handle error
+			}
+		}
+	}
 
 	// game ended
+	winnerTeam, err := g.GetWinner()
+	if err != nil {
+		log.Println(err)
+		return err
+	} else {
+		log.Printf("team %d won", winnerTeam)
+	}
 
 	// next set
 

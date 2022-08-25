@@ -46,6 +46,10 @@ func (g *game) Start() {
 	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(5))
 }
 
+func (g *game) GetTrump() *Player {
+	return g.players[g.leaderPos]
+}
+
 func (g *game) SetTrump(suit model.Suit) {
 	g.trump = suit
 }
@@ -76,6 +80,7 @@ func (g *game) PlayCard(c *model.Card) error {
 	}
 
 	// add turn. turn start from leaderPos and go to len(players) - 1 and then restarted to 0
+	g.turn = (g.turn + 1) % 4
 
 	return nil
 }
@@ -121,4 +126,18 @@ func (g *game) calculateTurnResult() {
 
 	// refresh desk
 	g.desk = NewDesk()
+}
+
+func (g *game) isGameEnded() bool {
+	return g.score.FirstTeam == 7 || g.score.SecondTeam == 7
+}
+
+func (g *game) GetWinner() (Team, error) {
+	if g.score.FirstTeam == 7 {
+		return FirstTeam, nil
+	} else if g.score.SecondTeam == 7 {
+		return SecondTeam, nil
+	}
+
+	return 0, errors.New("game not finished yet")
 }
