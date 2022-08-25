@@ -1,7 +1,15 @@
 package main
 
-func main() {
+import (
+	"game/game/hokm"
+	"log"
+)
 
+func main() {
+	err := hokm.Run()
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 //var upgrader = websocket.Upgrader{

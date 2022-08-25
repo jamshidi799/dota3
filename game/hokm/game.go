@@ -41,6 +41,7 @@ func (g *game) Start() {
 
 	// set trump-caller
 	g.leaderPos = rand.Intn(4)
+	g.players[g.leaderPos].IsTrumpCaller = true
 
 	// deal first 5 card to trump-caller
 	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(5))

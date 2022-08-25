@@ -1,13 +1,22 @@
 package hokm
 
 import (
+	"fmt"
 	"game/model"
 	"log"
 )
 
 func Run() error {
 
-	players := [4]*Player{}
+	var players [4]*Player
+
+	for i := 0; i < 4; i++ {
+		players[i] = &Player{
+			Team:     Team(i % 2),
+			position: i,
+			Hand:     NewHand(),
+		}
+	}
 
 	// init game
 	g := NewGame(players)
@@ -20,12 +29,24 @@ func Run() error {
 	// deal
 	g.DealCards()
 
+	fmt.Printf("%+v\n", g.deck.Pop(5))
+
+	fmt.Printf("%+v", g.players[g.leaderPos].Hand.cards)
+
 	// play card in loop
-	for g.isGameEnded() {
-		for i := 0; i < 4; i++ {
-			err := g.PlayCard(&model.Card{})
+	for !g.isGameEnded() {
+		i := 0
+		for i < 4 {
+			var suit, rank int
+			_, _ = fmt.Scanln(&suit, &rank)
+			err := g.PlayCard(&model.Card{
+				Rank: model.Rank(rank),
+				Suit: model.Suit(suit),
+			})
 			if err != nil {
-				return err // todo: handle error
+				log.Printf(err.Error())
+			} else {
+				i++
 			}
 		}
 	}

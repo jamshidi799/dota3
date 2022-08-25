@@ -7,10 +7,17 @@ type Hand struct {
 }
 
 func NewHand() *Hand {
-	return &Hand{}
+	return &Hand{
+		cards: map[int]model.Card{},
+	}
 }
 
 func (h *Hand) SetCards(cs []model.Card) {
+	cardMap := map[int]model.Card{}
+	for _, card := range cs {
+		cardMap[card.GetInt()] = card
+	}
+	h.cards = cardMap
 }
 
 func (h *Hand) PopCard(i int) (*model.Card, bool) {

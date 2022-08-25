@@ -30,7 +30,7 @@ func (d *Deck) Shuffle() {
 	rand.Shuffle(len(d.cards), func(i, j int) { d.cards[i], d.cards[j] = d.cards[j], d.cards[i] })
 }
 
-func (d Deck) Pop(count int) []Card {
+func (d *Deck) Pop(count int) []Card {
 	cards := d.cards[:count]
 	if len(d.cards) > 1 {
 		d.cards = d.cards[count:]
