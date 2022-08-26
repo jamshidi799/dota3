@@ -25,6 +25,10 @@ func NewDeck() *Deck {
 	return &Deck{cards: cards}
 }
 
+func (d *Deck) GetCards() []Card {
+	return d.cards
+}
+
 func (d *Deck) Shuffle() {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(d.cards), func(i, j int) { d.cards[i], d.cards[j] = d.cards[j], d.cards[i] })

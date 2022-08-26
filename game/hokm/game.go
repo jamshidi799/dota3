@@ -105,15 +105,15 @@ func (g *game) isCardValid(c *model.Card) bool {
 func (g *game) calculateTurnResult() {
 
 	maxCard := g.desk.cards[0]
-	maxIndex := g.leaderPos
+	maxIndex := 0
 
 	for i, deskCard := range g.desk.cards[1:] {
 		if maxCard.Suit == deskCard.Suit && maxCard.Rank < deskCard.Rank {
 			maxCard = deskCard
-			maxIndex = i
+			maxIndex = i + 1
 		} else if deskCard.Suit == g.trump {
 			maxCard = deskCard
-			maxIndex = i
+			maxIndex = i + 1
 		}
 	}
 
