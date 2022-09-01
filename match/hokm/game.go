@@ -146,5 +146,5 @@ func (g *game) GetWinner() (Team, error) {
 		return SecondTeam, nil
 	}
 
-	return 0, errors.New("game not finished yet")
+	return 0, errors.New("match not finished yet")
 }

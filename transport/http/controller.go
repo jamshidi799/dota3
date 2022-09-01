@@ -2,7 +2,7 @@ package http
 
 import (
 	"fmt"
-	"game/game"
+	"game/match"
 	"game/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	handlers = map[int]*game.BaseHandler{}
+	matches  = map[int]*match.Match{}
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -37,12 +37,12 @@ func signup(context *gin.Context) {
 func createMatch(c *gin.Context) {
 	// return match id
 
-	handlers[0] = game.NewHandler(&model.Match{
+	matches[0] = &match.Match{
 		Id:          1,
 		Type:        model.HOKM4,
 		PlayerCount: 4,
-		Players:     map[int]*model.Player{},
-	})
+		Players:     map[int]*model.Client{},
+	}
 
 	c.JSON(200, 0)
 }
@@ -61,8 +61,8 @@ func joinMatch(c *gin.Context) {
 	}
 
 	// add player to handler
-	handler := handlers[matchId]
-	handler.AddPlayer(&model.Player{Id: userId, Username: "ali", Connection: conn})
+	handler := matches[matchId]
+	handler.AddPlayer(&model.Client{Id: userId, Username: "ali", Connection: conn})
 
 	//for {
 	//	// Read message from browser

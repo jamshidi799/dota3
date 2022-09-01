@@ -104,7 +104,7 @@ func TestPlayCard(t *testing.T) {
 	}
 
 	if g.turn != turnBeforeInvalidMove {
-		t.Fatal("game turn changed after invalid move")
+		t.Fatal("match turn changed after invalid move")
 	}
 
 	for _, c := range g.players[g.turn].Hand.cards {
@@ -194,7 +194,7 @@ func TestCalculateTurnResult(t *testing.T) {
 		}
 
 		if len(g.desk.cards) != 0 {
-			t.Fatalf("test[%d]: game desk is not empty after result calculation", i)
+			t.Fatalf("test[%d]: match desk is not empty after result calculation", i)
 		}
 	}
 

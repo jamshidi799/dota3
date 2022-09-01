@@ -6,19 +6,21 @@ import (
 	"log"
 )
 
-func Run() error {
+func Run(clients []*model.Client) error {
 
 	var players [4]*Player
 
 	for i := 0; i < 4; i++ {
 		players[i] = &Player{
+			Id:       clients[i].Id,
 			Team:     Team(i % 2),
 			position: i,
 			Hand:     NewHand(),
+			Client:   clients[i],
 		}
 	}
 
-	// init game
+	// init match
 	g := NewGame(players)
 
 	g.Start()
@@ -47,7 +49,7 @@ func Run() error {
 		}
 	}
 
-	// game ended
+	// match ended
 	winnerTeam, err := g.GetWinner()
 	if err != nil {
 		log.Println(err)

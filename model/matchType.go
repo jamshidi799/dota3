@@ -1,15 +1,5 @@
 package model
 
-import "game/game/hokm"
-
-func (m MatchType) GetHandler() func() error {
-	if m == HOKM4 {
-		return hokm.Run
-	}
-
-	return nil
-}
-
 type MatchType int
 
 const (

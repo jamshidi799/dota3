@@ -10,10 +10,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-//func main() {
-//	err := hokm.Run()
-//	if err != nil {
-//		log.Println(err)
-//	}
-//}
