@@ -1,13 +1,16 @@
 package model
 
+import "github.com/gorilla/websocket"
+
 type Match struct {
 	Id          int
-	Type        string
+	Type        MatchType
 	PlayerCount int
-	Players     []Player
+	Players     map[int]*Player
 }
 
 type Player struct {
-	Id       int
-	Username string
+	Id         int
+	Username   string
+	Connection *websocket.Conn
 }
