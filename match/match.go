@@ -36,5 +36,6 @@ func (m *Match) AddClient(client *messenger.Client) {
 }
 
 func (m *Match) run() {
-	hokm.Run(m.Clients)
+	handler := hokm.NewHandler(m.Clients)
+	handler.Run()
 }

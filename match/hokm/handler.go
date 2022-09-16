@@ -9,41 +9,50 @@ import (
 	"math/rand"
 )
 
-func Run(clients messenger.Clients) error {
+type handler struct {
+	clients messenger.Clients
+	game    *game
+}
+
+func NewHandler(clients messenger.Clients) *handler {
+	return &handler{clients: clients}
+}
+
+func (h *handler) Run() error {
 
 	var players [4]*Player
 
 	for i := 0; i < 4; i++ {
-		players[i] = NewPlayer(clients[i].Id, Team(i%2), i, NewHand(), false, clients[i])
+		players[i] = newPlayer(h.clients[i].Id, team(i%2), i, newHand(), false, h.clients[i])
 	}
 
 	// init match
-	g := NewGame(players)
+	h.game = newGame(players)
 
-	g.Start()
+	h.game.start()
 
 	trumpCaller := rand.Intn(4)
-	g.setTrumpCaller(trumpCaller)
-	clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
+	h.game.setTrumpCaller(trumpCaller)
+	h.clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
 
-	trumpCallerFiveCards := g.dealFirstFiveCardToTrumpCaller()
-	g.GetTrump().Client.
+	trumpCallerFiveCards := h.game.dealFirstFiveCardToTrumpCaller()
+	h.game.getTrump().client.
 		SendEventToPlayer(event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
 
 	// todo: listen to caller
 	// set trump
-	g.SetTrump(model.DIAMOND)
+	h.game.setTrump(model.DIAMOND)
 
 	// deal
-	g.DealCards()
+	h.game.dealCards()
 
 	// play card in loop
-	for !g.isGameEnded() {
+	for !h.game.isGameEnded() {
 		i := 0
 		for i < 4 {
 			var suit, rank int
 			_, _ = fmt.Scanln(&suit, &rank)
-			err := g.PlayCard(&model.Card{
+			err := h.game.playCard(&model.Card{
 				Rank: model.Rank(rank),
 				Suit: model.Suit(suit),
 			})
@@ -56,7 +65,7 @@ func Run(clients messenger.Clients) error {
 	}
 
 	// match ended
-	winnerTeam, err := g.GetWinner()
+	winnerTeam, err := h.game.getWinner()
 	if err != nil {
 		log.Println(err)
 		return err

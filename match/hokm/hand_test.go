@@ -6,13 +6,13 @@ import (
 )
 
 func TestSetCards(t *testing.T) {
-	h := NewHand()
+	h := newHand()
 
 	cards := []model.Card{
 		{1, 2},
 		{14, 2},
 	}
-	h.SetCards(cards)
+	h.setCards(cards)
 
 	if len(h.cards) != len(cards) {
 		t.Fatalf("got %d len, wanted %d len", len(h.cards), len(cards))
@@ -27,17 +27,17 @@ func TestSetCards(t *testing.T) {
 }
 
 func TestHasSuit(t *testing.T) {
-	d := NewHand()
-	d.SetCards([]model.Card{
+	d := newHand()
+	d.setCards([]model.Card{
 		{1, 2},
 		{14, 2},
 	})
 
-	if !d.HasSuit(model.Suit(2)) {
+	if !d.hasSuit(model.Suit(2)) {
 		t.Fatal("hand should have suit 2")
 	}
 
-	if d.HasSuit(model.Suit(3)) {
+	if d.hasSuit(model.Suit(3)) {
 		t.Fatal("hand should not have suit 3")
 	}
 }

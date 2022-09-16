@@ -1,8 +1,8 @@
 package hokm
 
-type Team int
+type team int
 
 const (
-	FirstTeam Team = iota + 1
+	FirstTeam team = iota + 1
 	SecondTeam
 )

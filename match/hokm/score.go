@@ -1,6 +1,6 @@
 package hokm
 
-type Score struct {
-	FirstTeam  int
-	SecondTeam int
+type score struct {
+	firstTeam  int
+	secondTeam int
 }

@@ -6,12 +6,12 @@ import (
 )
 
 func TestAdd(t *testing.T) {
-	d := NewDesk()
+	d := newDesk()
 	card := model.Card{
 		Rank: 4,
 		Suit: 2,
 	}
-	d.Add(&card)
+	d.add(&card)
 
 	if len(d.cards) == 0 {
 		t.Fatalf("card did'nt added")
@@ -23,16 +23,16 @@ func TestAdd(t *testing.T) {
 }
 
 func TestGetSuit(t *testing.T) {
-	d := NewDesk()
+	d := newDesk()
 
 	suit := 2
 	card := model.Card{
 		Rank: 4,
 		Suit: model.Suit(suit),
 	}
-	d.Add(&card)
+	d.add(&card)
 
-	got := d.GetSuit()
+	got := d.getSuit()
 	want := model.Suit(suit)
 
 	if got != want {

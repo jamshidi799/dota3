@@ -5,21 +5,21 @@ import (
 )
 
 type Player struct {
-	Id            int
-	Team          Team
+	id            int
+	team          team
 	position      int
-	Hand          *Hand
-	IsTrumpCaller bool
-	Client        *messenger.Client
+	hand          *Hand
+	isTrumpCaller bool
+	client        *messenger.Client
 }
 
-func NewPlayer(id int, team Team, position int, hand *Hand, isTrumpCaller bool, client *messenger.Client) *Player {
+func newPlayer(id int, team team, position int, hand *Hand, isTrumpCaller bool, client *messenger.Client) *Player {
 	return &Player{
-		Id:            id,
-		Team:          team,
+		id:            id,
+		team:          team,
 		position:      position,
-		Hand:          hand,
-		IsTrumpCaller: isTrumpCaller,
-		Client:        client,
+		hand:          hand,
+		isTrumpCaller: isTrumpCaller,
+		client:        client,
 	}
 }

@@ -6,13 +6,13 @@ type Hand struct {
 	cards map[int]model.Card // map[card int] card
 }
 
-func NewHand() *Hand {
+func newHand() *Hand {
 	return &Hand{
 		cards: map[int]model.Card{},
 	}
 }
 
-func (h *Hand) SetCards(cs []model.Card) {
+func (h *Hand) setCards(cs []model.Card) {
 	cardMap := map[int]model.Card{}
 	for _, card := range cs {
 		cardMap[card.GetInt()] = card
@@ -20,13 +20,13 @@ func (h *Hand) SetCards(cs []model.Card) {
 	h.cards = cardMap
 }
 
-func (h *Hand) AppendCards(cs []model.Card) {
+func (h *Hand) appendCards(cs []model.Card) {
 	for _, card := range cs {
 		h.cards[card.GetInt()] = card
 	}
 }
 
-func (h *Hand) PopCard(i int) (*model.Card, bool) {
+func (h *Hand) popCard(i int) (*model.Card, bool) {
 	card, ok := h.cards[i]
 	if ok {
 		delete(h.cards, i)
@@ -34,7 +34,7 @@ func (h *Hand) PopCard(i int) (*model.Card, bool) {
 	return &card, ok
 }
 
-func (h *Hand) HasSuit(s model.Suit) bool {
+func (h *Hand) hasSuit(s model.Suit) bool {
 	for _, card := range h.cards {
 		if card.Suit == s {
 			return true
@@ -43,6 +43,6 @@ func (h *Hand) HasSuit(s model.Suit) bool {
 	return false
 }
 
-func (h *Hand) DeleteCard(i int) {
+func (h *Hand) deleteCard(i int) {
 	delete(h.cards, i)
 }

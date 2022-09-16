@@ -11,39 +11,39 @@ func generatePlayer() [4]*Player {
 
 	for i := 0; i < 4; i++ {
 		players[i] = &Player{
-			Team:     Team(i % 2),
+			team:     team(i % 2),
 			position: i,
-			Hand:     NewHand(),
+			hand:     newHand(),
 		}
 	}
 	return players
 }
 
 func TestStart(t *testing.T) {
-	g := NewGame(generatePlayer())
-	g.Start()
+	g := newGame(generatePlayer())
+	g.start()
 
-	if !g.players[g.leaderPos].IsTrumpCaller {
-		t.Fatal("IsTrumpCaller not set for leader")
+	if !g.players[g.leaderPos].isTrumpCaller {
+		t.Fatal("isTrumpCaller not set for leader")
 	}
 
 	if g.turn != g.leaderPos {
 		t.Fatalf("g.turn((%d)) != g.leaderPos((%d))", g.turn, g.leaderPos)
 	}
 
-	if len(g.players[g.leaderPos].Hand.cards) != 5 {
+	if len(g.players[g.leaderPos].hand.cards) != 5 {
 		t.Fatal("leader hand not set")
 	}
 }
 
 func TestDealCards(t *testing.T) {
-	g := NewGame(generatePlayer())
-	g.Start()
-	g.DealCards()
+	g := newGame(generatePlayer())
+	g.start()
+	g.dealCards()
 
 	for i, player := range g.players {
-		if len(player.Hand.cards) != 13 {
-			t.Fatalf("player %d hand len: %d, wanted: 13", i, len(player.Hand.cards))
+		if len(player.hand.cards) != 13 {
+			t.Fatalf("player %d hand len: %d, wanted: 13", i, len(player.hand.cards))
 		}
 	}
 
@@ -51,7 +51,7 @@ func TestDealCards(t *testing.T) {
 	for _, card := range deck.GetCards() {
 		i := 0
 		for _, player := range g.players {
-			if _, ok := player.Hand.cards[card.GetInt()]; ok {
+			if _, ok := player.hand.cards[card.GetInt()]; ok {
 				i++
 			}
 		}
@@ -64,17 +64,17 @@ func TestDealCards(t *testing.T) {
 }
 
 func TestPlayCard(t *testing.T) {
-	g := NewGame(generatePlayer())
-	g.Start()
-	g.DealCards()
+	g := newGame(generatePlayer())
+	g.start()
+	g.dealCards()
 
 	var validCard model.Card
-	for _, c := range g.players[g.turn].Hand.cards {
+	for _, c := range g.players[g.turn].hand.cards {
 		validCard = c
 		break
 	}
 
-	if err := g.PlayCard(&validCard); err != nil {
+	if err := g.playCard(&validCard); err != nil {
 		t.Fatalf("error on safe move: %s", err)
 	}
 
@@ -82,24 +82,24 @@ func TestPlayCard(t *testing.T) {
 		t.Fatalf("card not added to desk")
 	}
 
-	if deskCard := g.desk.GetCards()[0]; deskCard != &validCard {
+	if deskCard := g.desk.getCards()[0]; deskCard != &validCard {
 		t.Fatalf("wrong card added to desk. got %+v, want: %+v", deskCard, validCard)
 	}
 
-	if _, ok := g.players[g.leaderPos].Hand.PopCard(validCard.GetInt()); ok == true {
+	if _, ok := g.players[g.leaderPos].hand.popCard(validCard.GetInt()); ok == true {
 		t.Fatal("played card not removed from player hand")
 	}
 
 	turnBeforeInvalidMove := g.turn
 	var invalidCard model.Card
-	for _, c := range g.players[g.turn].Hand.cards {
-		if c.Suit != g.desk.GetSuit() {
+	for _, c := range g.players[g.turn].hand.cards {
+		if c.Suit != g.desk.getSuit() {
 			invalidCard = c
 			break
 		}
 	}
 
-	if err := g.PlayCard(&invalidCard); err == nil {
+	if err := g.playCard(&invalidCard); err == nil {
 		t.Fatal("not rise error on invalid move")
 	}
 
@@ -107,14 +107,14 @@ func TestPlayCard(t *testing.T) {
 		t.Fatal("match turn changed after invalid move")
 	}
 
-	for _, c := range g.players[g.turn].Hand.cards {
-		if c.Suit == g.desk.GetSuit() {
+	for _, c := range g.players[g.turn].hand.cards {
+		if c.Suit == g.desk.getSuit() {
 			validCard = c
 			break
 		}
 	}
 
-	if err := g.PlayCard(&validCard); err != nil {
+	if err := g.playCard(&validCard); err != nil {
 		t.Fatalf("error on safe move: %s", err)
 	}
 
@@ -174,8 +174,8 @@ func TestCalculateTurnResult(t *testing.T) {
 
 	for i, test := range tests {
 
-		g := NewGame(generatePlayer())
-		g.Start()
+		g := newGame(generatePlayer())
+		g.start()
 
 		g.trump = test.trump
 		g.desk = test.desk
@@ -184,8 +184,8 @@ func TestCalculateTurnResult(t *testing.T) {
 		g.calculateTurnResult()
 
 		winnerPos := (test.winnerPos + leaderBeforeCalculation) % 4
-		if (g.players[winnerPos].Team == FirstTeam && g.score.FirstTeam != 1) ||
-			(g.players[winnerPos].Team == SecondTeam && g.score.SecondTeam != 1) {
+		if (g.players[winnerPos].team == FirstTeam && g.score.firstTeam != 1) ||
+			(g.players[winnerPos].team == SecondTeam && g.score.secondTeam != 1) {
 			t.Fatalf("test[%d]: wrong result calculation, result: %+v", i, g.score)
 		}
 
