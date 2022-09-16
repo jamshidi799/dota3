@@ -29,6 +29,8 @@ func StartServer() error {
 	r.POST("/match", createMatch)
 	r.GET("/join", joinMatch)
 
+	matches[0] = match.NewMatch(model.HOKM4, 4)
+
 	return r.Run()
 }
 

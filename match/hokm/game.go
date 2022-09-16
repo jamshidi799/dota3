@@ -3,7 +3,6 @@ package hokm
 import (
 	"errors"
 	"game/model"
-	"math/rand"
 )
 
 type game struct {
@@ -38,14 +37,18 @@ func NewGame(players [4]*Player) *game {
 func (g *game) Start() {
 	// shuffle
 	g.deck.Shuffle()
+}
 
-	// set trump-caller
-	g.leaderPos = rand.Intn(4)
+func (g *game) setTrumpCaller(position int) {
+	g.leaderPos = position
 	g.players[g.leaderPos].IsTrumpCaller = true
 	g.turn = g.leaderPos
+}
 
-	// deal first 5 card to trump-caller
-	g.players[g.leaderPos].Hand.SetCards(g.deck.Pop(5))
+func (g *game) dealFirstFiveCardToTrumpCaller() []model.Card {
+	cards := g.deck.Pop(5)
+	g.players[g.leaderPos].Hand.SetCards(cards)
+	return cards
 }
 
 func (g *game) GetTrump() *Player {

@@ -15,16 +15,16 @@ type Match struct {
 }
 
 func NewMatch(t model.MatchType, playerCount int) *Match {
-	id := 1
+	id := 1 // todo
 	return &Match{Id: id, Type: t, PlayerCount: playerCount, Clients: messenger.Clients{}}
 }
 
 func (m *Match) AddClient(client *messenger.Client) {
-	m.Clients[client.Id] = client
+	m.Clients = append(m.Clients, client)
 
 	// broadcast join event to other client
 	msg := []byte(fmt.Sprintf("client %d joined", client.Id))
-	m.Clients.BroadcastMessageToOther(client.Id, msg)
+	m.Clients.BroadcastMessage(msg)
 
 	// check if number of client is enough or not. if enough broadcast start match event
 	if len(m.Clients) == m.PlayerCount {

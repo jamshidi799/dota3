@@ -3,8 +3,10 @@ package hokm
 import (
 	"fmt"
 	"game/messenger"
+	"game/messenger/event"
 	"game/model"
 	"log"
+	"math/rand"
 )
 
 func Run(clients messenger.Clients) error {
@@ -20,6 +22,15 @@ func Run(clients messenger.Clients) error {
 
 	g.Start()
 
+	trumpCaller := rand.Intn(4)
+	g.setTrumpCaller(trumpCaller)
+	clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
+
+	trumpCallerFiveCards := g.dealFirstFiveCardToTrumpCaller()
+	g.GetTrump().Client.
+		SendEventToPlayer(event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
+
+	// todo: listen to caller
 	// set trump
 	g.SetTrump(model.DIAMOND)
 
