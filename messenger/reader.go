@@ -8,13 +8,11 @@ import (
 func (c *Client) Read(schema any) {
 	_, msg, err := c.Connection.ReadMessage()
 	if err != nil {
-		c.SendMessageToPlayer(err.Error())
 		return
 	}
 
 	err = json.Unmarshal(msg, schema)
 	if err != nil {
-		c.SendMessageToPlayer(err.Error())
 		return
 	}
 }

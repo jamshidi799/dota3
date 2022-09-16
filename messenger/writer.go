@@ -8,6 +8,7 @@ import (
 
 type Clients []*Client
 
+// BroadcastMessage todo: remove
 func (c Clients) BroadcastMessage(msg []byte) {
 	for _, client := range c {
 		if err := client.Connection.WriteMessage(websocket.TextMessage, msg); err != nil {
@@ -29,25 +30,18 @@ func (c Clients) BroadcastEvent(event any) {
 	}
 }
 
-func (c Clients) BroadcastMessageToOther(exceptionPlayerId int, msg []byte) {
-	for id, client := range c {
-		if id != exceptionPlayerId {
-			if err := client.Connection.WriteMessage(websocket.TextMessage, msg); err != nil {
+func (c Clients) BroadcastEventToOther(exceptionPlayerIndex int, event any) {
+	data, err := json.Marshal(event)
+	if err != nil {
+		return
+	}
+
+	for i, client := range c {
+		if i != exceptionPlayerIndex {
+			if err := client.Connection.WriteMessage(websocket.TextMessage, data); err != nil {
 				log.Println(err)
 			}
 		}
-	}
-}
-
-func (c Clients) SendMessageToPlayer(clientId int, msg []byte) {
-	if err := c[clientId].Connection.WriteMessage(websocket.TextMessage, msg); err != nil { // fixme: use index instead of playerId
-		log.Println(err)
-	}
-}
-
-func (c *Client) SendMessageToPlayer(msg string) {
-	if err := c.Connection.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-		log.Println(err)
 	}
 }
 

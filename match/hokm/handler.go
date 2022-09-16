@@ -1,7 +1,6 @@
 package hokm
 
 import (
-	"fmt"
 	"game/match/hokm/response"
 	"game/messenger"
 	"game/messenger/event"
@@ -9,6 +8,8 @@ import (
 	"log"
 	"math/rand"
 )
+
+const MaxRetryCount = 3
 
 type handler struct {
 	clients messenger.Clients
@@ -21,41 +22,11 @@ func NewHandler(clients messenger.Clients) *handler {
 
 func (h *handler) Run() error {
 
-	var players [4]*Player
-
-	for i := 0; i < 4; i++ {
-		players[i] = newPlayer(h.clients[i].Id, team(i%2), i, newHand(), false, h.clients[i])
-	}
-
-	// init match
-	h.game = newGame(players)
-	h.game.start()
-
-	trumpCaller := rand.Intn(4)
-	h.game.setTrumpCaller(trumpCaller)
-	h.clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
-
+	h.initGame()
+	h.setTrumpCaller()
 	h.setTrump()
-
 	h.dealCards()
-
-	// play card in loop
-	for !h.game.isGameEnded() {
-		i := 0
-		for i < 4 {
-			var suit, rank int
-			_, _ = fmt.Scanln(&suit, &rank)
-			err := h.game.playCard(&model.Card{
-				Rank: model.Rank(rank),
-				Suit: model.Suit(suit),
-			})
-			if err != nil {
-				log.Printf(err.Error())
-			} else {
-				i++
-			}
-		}
-	}
+	h.gameLoop()
 
 	// match ended
 	winnerTeam, err := h.game.getWinner()
@@ -69,6 +40,23 @@ func (h *handler) Run() error {
 	// next set
 
 	return nil
+}
+
+func (h *handler) initGame() {
+	var players [4]*Player
+
+	for i := 0; i < 4; i++ {
+		players[i] = newPlayer(h.clients[i].Id, team(i%2), i, newHand(), false, h.clients[i])
+	}
+
+	h.game = newGame(players)
+	h.game.start()
+}
+
+func (h *handler) setTrumpCaller() {
+	trumpCaller := rand.Intn(4)
+	h.game.setTrumpCaller(trumpCaller)
+	h.clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
 }
 
 func (h *handler) setTrump() {
@@ -95,5 +83,36 @@ func (h *handler) dealCards() {
 		}
 
 		player.client.SendEventToPlayer(event.NewDealCardEvent(h.game.trump, cards))
+	}
+}
+
+func (h *handler) gameLoop() {
+	for !h.game.isGameEnded() {
+		i := 0
+		for i < 4 {
+			player := h.game.getCurrentPlayer()
+
+			for retry := 0; retry < MaxRetryCount; retry++ {
+
+				var resp response.PlayCardResponse
+				player.client.Read(&resp)
+
+				card := &model.Card{
+					Rank: resp.Rank,
+					Suit: resp.Suit,
+				}
+				err := h.game.playCard(card)
+
+				if err != nil {
+					player.client.SendEventToPlayer(event.NewErrorEvent(err.Error()))
+				} else {
+					playedCardEvent := event.NewPlayedCardEvent(card, player.position)
+					h.clients.BroadcastEventToOther(player.position, playedCardEvent)
+
+					i++
+					break
+				}
+			}
+		}
 	}
 }

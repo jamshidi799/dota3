@@ -44,3 +44,18 @@ func NewDealCardEvent(trump model.Suit, hand []model.Card) *dealCardEvent {
 		Hand:  hand,
 	}
 }
+
+type playedCardEvent struct {
+	Meta *Metadata
+
+	Card        *model.Card
+	PlayerIndex int
+}
+
+func NewPlayedCardEvent(card *model.Card, playerIndex int) *playedCardEvent {
+	return &playedCardEvent{
+		Meta:        newMetadata("playedCard"),
+		Card:        card,
+		PlayerIndex: playerIndex,
+	}
+}

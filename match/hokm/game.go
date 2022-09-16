@@ -151,3 +151,7 @@ func (g *game) getWinner() (team, error) {
 
 	return 0, errors.New("match not finished yet")
 }
+
+func (g *game) getCurrentPlayer() *Player {
+	return g.players[g.turn]
+}
