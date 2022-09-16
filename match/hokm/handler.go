@@ -28,7 +28,6 @@ func (h *handler) Run() error {
 
 	// init match
 	h.game = newGame(players)
-
 	h.game.start()
 
 	trumpCaller := rand.Intn(4)
@@ -44,7 +43,7 @@ func (h *handler) Run() error {
 	h.game.setTrump(model.DIAMOND)
 
 	// deal
-	h.game.dealCards()
+	h.dealCards()
 
 	// play card in loop
 	for !h.game.isGameEnded() {
@@ -76,4 +75,19 @@ func (h *handler) Run() error {
 	// next set
 
 	return nil
+}
+
+func (h *handler) dealCards() {
+	h.game.dealCards()
+
+	for _, player := range h.game.players {
+		cards := make([]model.Card, len(player.hand.cards))
+		i := 0
+		for _, card := range player.hand.cards {
+			cards[i] = card
+			i++
+		}
+
+		player.client.SendEventToPlayer(event.NewDealCardEvent(h.game.trump, cards))
+	}
 }

@@ -2,37 +2,45 @@ package event
 
 import (
 	"game/model"
-	"time"
 )
 
 type gameStartedEvent struct {
-	Meta Metadata
+	Meta *Metadata
 
 	TrumpCaller int
 }
 
 func NewGameStartedEvent(trumpCaller int) *gameStartedEvent {
 	return &gameStartedEvent{
-		Meta: Metadata{
-			Time: time.Now(),
-			Type: "GameStarted",
-		},
+		Meta:        newMetadata("GameStarted"),
 		TrumpCaller: trumpCaller,
 	}
 }
 
 type trumpCallerFirstCardEvent struct {
-	Meta Metadata
+	Meta *Metadata
 
 	Cards []model.Card
 }
 
 func NewTrumpCallerFirstCardEvent(cards []model.Card) *trumpCallerFirstCardEvent {
 	return &trumpCallerFirstCardEvent{
-		Meta: Metadata{
-			Time: time.Now(),
-			Type: "CallerFirstCard",
-		},
+		Meta:  newMetadata("CallerFirstCard"),
 		Cards: cards,
+	}
+}
+
+type dealCardEvent struct {
+	Meta *Metadata
+
+	Trump model.Suit
+	Hand  []model.Card
+}
+
+func NewDealCardEvent(trump model.Suit, hand []model.Card) *dealCardEvent {
+	return &dealCardEvent{
+		Meta:  newMetadata("DealCard"),
+		Trump: trump,
+		Hand:  hand,
 	}
 }
