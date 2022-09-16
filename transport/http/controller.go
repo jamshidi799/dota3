@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"game/match"
+	"game/messenger"
 	"game/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -32,17 +33,11 @@ func StartServer() error {
 }
 
 func signup(context *gin.Context) {
+
 }
 
 func createMatch(c *gin.Context) {
-	// return match id
-
-	matches[0] = &match.Match{
-		Id:          1,
-		Type:        model.HOKM4,
-		PlayerCount: 4,
-		Players:     map[int]*model.Client{},
-	}
+	matches[0] = match.NewMatch(model.HOKM4, 4)
 
 	c.JSON(200, 0)
 }
@@ -54,7 +49,7 @@ func joinMatch(c *gin.Context) {
 
 	// create websocket connection
 
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil) // error ignored for sake of simplicity
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -62,7 +57,7 @@ func joinMatch(c *gin.Context) {
 
 	// add player to handler
 	handler := matches[matchId]
-	handler.AddPlayer(&model.Client{Id: userId, Username: "ali", Connection: conn})
+	handler.AddClient(&messenger.Client{Id: userId, Username: "ali", Connection: conn})
 
 	//for {
 	//	// Read message from browser

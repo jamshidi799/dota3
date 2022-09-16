@@ -3,62 +3,38 @@ package match
 import (
 	"fmt"
 	"game/match/hokm"
+	"game/messenger"
 	"game/model"
-	"log"
 )
 
 type Match struct {
 	Id          int
 	Type        model.MatchType
-	PlayerCount int
-	Players     map[int]*model.Client
+	PlayerCount int // todo: MatchType should contain PlayerCount
+	Clients     messenger.Clients
 }
 
-func (m *Match) AddPlayer(player *model.Client) {
-	m.Players[player.Id] = player
+func NewMatch(t model.MatchType, playerCount int) *Match {
+	id := 1
+	return &Match{Id: id, Type: t, PlayerCount: playerCount, Clients: messenger.Clients{}}
+}
 
-	// broadcast join event to other player
-	msg := []byte(fmt.Sprintf("player %d joined", player.Id))
-	m.broadcastMessageToOther(player.Id, msg)
+func (m *Match) AddClient(client *messenger.Client) {
+	m.Clients[client.Id] = client
 
-	// check if number of player is enough or not. if enough broadcast start match event
-	if len(m.Players) == m.PlayerCount {
+	// broadcast join event to other client
+	msg := []byte(fmt.Sprintf("client %d joined", client.Id))
+	m.Clients.BroadcastMessageToOther(client.Id, msg)
+
+	// check if number of client is enough or not. if enough broadcast start match event
+	if len(m.Clients) == m.PlayerCount {
 		msg := []byte("match started")
-		m.broadcastMessage(msg)
+		m.Clients.BroadcastMessage(msg)
+		m.run()
 	}
 
-	m.run()
 }
 
 func (m *Match) run() {
-	list := make([]*model.Client, len(m.Players))
-	for i, client := range m.Players {
-		list[i] = client
-	}
-
-	hokm.Run(list)
-}
-
-func (m *Match) broadcastMessage(msg []byte) {
-	for _, player := range m.Players {
-		if err := player.Connection.WriteMessage(1, msg); err != nil {
-			log.Println(err)
-		}
-	}
-}
-
-func (m *Match) broadcastMessageToOther(exceptionPlayerId int, msg []byte) {
-	for id, player := range m.Players {
-		if id != exceptionPlayerId {
-			if err := player.Connection.WriteMessage(1, msg); err != nil {
-				log.Println(err)
-			}
-		}
-	}
-}
-
-func (m *Match) sendMessageToPlayer(playerId int, msg []byte) {
-	if err := m.Players[playerId].Connection.WriteMessage(1, msg); err != nil {
-		log.Println(err)
-	}
+	hokm.Run(m.Clients)
 }

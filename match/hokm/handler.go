@@ -2,22 +2,17 @@ package hokm
 
 import (
 	"fmt"
+	"game/messenger"
 	"game/model"
 	"log"
 )
 
-func Run(clients []*model.Client) error {
+func Run(clients messenger.Clients) error {
 
 	var players [4]*Player
 
 	for i := 0; i < 4; i++ {
-		players[i] = &Player{
-			Id:       clients[i].Id,
-			Team:     Team(i % 2),
-			position: i,
-			Hand:     NewHand(),
-			Client:   clients[i],
-		}
+		players[i] = NewPlayer(clients[i].Id, Team(i%2), i, NewHand(), false, clients[i])
 	}
 
 	// init match
