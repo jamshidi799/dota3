@@ -45,13 +45,13 @@ func (c Clients) SendMessageToPlayer(clientId int, msg []byte) {
 	}
 }
 
-func (c Client) SendMessageToPlayer(msg []byte) {
-	if err := c.Connection.WriteMessage(websocket.TextMessage, msg); err != nil {
+func (c *Client) SendMessageToPlayer(msg string) {
+	if err := c.Connection.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		log.Println(err)
 	}
 }
 
-func (c Client) SendEventToPlayer(event any) {
+func (c *Client) SendEventToPlayer(event any) {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return

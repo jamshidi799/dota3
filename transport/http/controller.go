@@ -34,14 +34,12 @@ func StartServer() error {
 	return r.Run()
 }
 
-func signup(context *gin.Context) {
-
+func signup(c *gin.Context) {
+	// todo
 }
 
 func createMatch(c *gin.Context) {
-	matches[0] = match.NewMatch(model.HOKM4, 4)
-
-	c.JSON(200, 0)
+	// todo
 }
 
 func joinMatch(c *gin.Context) {
@@ -50,30 +48,12 @@ func joinMatch(c *gin.Context) {
 	matchId, _ := strconv.Atoi(c.Query("matchId"))
 
 	// create websocket connection
-
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// add player to handler
 	handler := matches[matchId]
 	handler.AddClient(&messenger.Client{Id: userId, Username: "ali", Connection: conn})
-
-	//for {
-	//	// Read message from browser
-	//	msgType, msg, err := conn.ReadMessage()
-	//	if err != nil {
-	//		return
-	//	}
-	//
-	//	// Print the message to the console
-	//	fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-	//
-	//	// Write message back to browser
-	//	if err = conn.WriteMessage(msgType, msg); err != nil {
-	//		return
-	//	}
-	//}
 }

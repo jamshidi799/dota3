@@ -2,6 +2,7 @@ package hokm
 
 import (
 	"fmt"
+	"game/match/hokm/response"
 	"game/messenger"
 	"game/messenger/event"
 	"game/model"
@@ -34,15 +35,8 @@ func (h *handler) Run() error {
 	h.game.setTrumpCaller(trumpCaller)
 	h.clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
 
-	trumpCallerFiveCards := h.game.dealFirstFiveCardToTrumpCaller()
-	h.game.getTrump().client.
-		SendEventToPlayer(event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
+	h.setTrump()
 
-	// todo: listen to caller
-	// set trump
-	h.game.setTrump(model.DIAMOND)
-
-	// deal
 	h.dealCards()
 
 	// play card in loop
@@ -75,6 +69,18 @@ func (h *handler) Run() error {
 	// next set
 
 	return nil
+}
+
+func (h *handler) setTrump() {
+	trumpCallerFiveCards := h.game.dealFirstFiveCardToTrumpCaller()
+	h.game.getTrump().client.
+		SendEventToPlayer(event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
+
+	var resp response.SetTrumpResponse
+	h.game.getTrump().client.Read(&resp)
+	if resp.Suit != 0 {
+		h.game.setTrump(resp.Suit)
+	}
 }
 
 func (h *handler) dealCards() {
