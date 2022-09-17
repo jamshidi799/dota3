@@ -127,12 +127,12 @@ func TestPlayCard(t *testing.T) {
 func TestCalculateTurnResult(t *testing.T) {
 	tests := []struct {
 		trump     model.Suit
-		desk      *Desk
+		desk      *desk
 		winnerPos int
 	}{
 		{
 			model.SAPDE,
-			&Desk{cards: []*model.Card{
+			&desk{cards: []*model.Card{
 				{12, model.DIAMOND},
 				{10, model.DIAMOND},
 				{14, model.DIAMOND},
@@ -142,7 +142,7 @@ func TestCalculateTurnResult(t *testing.T) {
 		},
 		{
 			model.SAPDE,
-			&Desk{cards: []*model.Card{
+			&desk{cards: []*model.Card{
 				{2, model.SAPDE},
 				{12, model.DIAMOND},
 				{10, model.DIAMOND},
@@ -152,7 +152,7 @@ func TestCalculateTurnResult(t *testing.T) {
 		},
 		{
 			model.SAPDE,
-			&Desk{cards: []*model.Card{
+			&desk{cards: []*model.Card{
 				{12, model.DIAMOND},
 				{10, model.DIAMOND},
 				{14, model.DIAMOND},
@@ -162,7 +162,7 @@ func TestCalculateTurnResult(t *testing.T) {
 		},
 		{
 			model.SAPDE,
-			&Desk{cards: []*model.Card{
+			&desk{cards: []*model.Card{
 				{12, model.DIAMOND},
 				{7, model.SAPDE},
 				{14, model.DIAMOND},

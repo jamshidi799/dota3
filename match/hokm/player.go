@@ -8,12 +8,12 @@ type Player struct {
 	id            int
 	team          team
 	position      int
-	hand          *Hand
+	hand          *hand
 	isTrumpCaller bool
 	client        *messenger.Client
 }
 
-func newPlayer(id int, team team, position int, hand *Hand, isTrumpCaller bool, client *messenger.Client) *Player {
+func newPlayer(id int, team team, position int, hand *hand, isTrumpCaller bool, client *messenger.Client) *Player {
 	return &Player{
 		id:            id,
 		team:          team,

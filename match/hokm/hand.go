@@ -2,17 +2,17 @@ package hokm
 
 import "game/model"
 
-type Hand struct {
-	cards map[int]model.Card // map[card int] card
+type hand struct {
+	cards map[int]model.Card
 }
 
-func newHand() *Hand {
-	return &Hand{
+func newHand() *hand {
+	return &hand{
 		cards: map[int]model.Card{},
 	}
 }
 
-func (h *Hand) setCards(cs []model.Card) {
+func (h *hand) setCards(cs []model.Card) {
 	cardMap := map[int]model.Card{}
 	for _, card := range cs {
 		cardMap[card.GetInt()] = card
@@ -20,13 +20,13 @@ func (h *Hand) setCards(cs []model.Card) {
 	h.cards = cardMap
 }
 
-func (h *Hand) appendCards(cs []model.Card) {
+func (h *hand) appendCards(cs []model.Card) {
 	for _, card := range cs {
 		h.cards[card.GetInt()] = card
 	}
 }
 
-func (h *Hand) popCard(i int) (*model.Card, bool) {
+func (h *hand) popCard(i int) (*model.Card, bool) {
 	card, ok := h.cards[i]
 	if ok {
 		delete(h.cards, i)
@@ -34,7 +34,7 @@ func (h *Hand) popCard(i int) (*model.Card, bool) {
 	return &card, ok
 }
 
-func (h *Hand) hasSuit(s model.Suit) bool {
+func (h *hand) hasSuit(s model.Suit) bool {
 	for _, card := range h.cards {
 		if card.Suit == s {
 			return true
@@ -43,6 +43,15 @@ func (h *Hand) hasSuit(s model.Suit) bool {
 	return false
 }
 
-func (h *Hand) deleteCard(i int) {
+func (h *hand) deleteCard(i int) {
 	delete(h.cards, i)
+}
+
+func (h *hand) hasCard(c *model.Card) bool {
+	for _, card := range h.cards {
+		if card.Suit == c.Suit && card.Rank == c.Rank {
+			return true
+		}
+	}
+	return false
 }

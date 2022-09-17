@@ -7,7 +7,7 @@ import (
 
 type game struct {
 	deck    *model.Deck
-	desk    *Desk
+	desk    *desk
 	players map[int]*Player
 
 	turn      int
@@ -72,8 +72,8 @@ func (g *game) dealCards() {
 
 func (g *game) playCard(c *model.Card) error {
 	// check card validity
-	if !g.isCardValid(c) {
-		return errors.New("card is invalid")
+	if err := g.isCardValid(c); err != nil {
+		return err
 	}
 
 	// add card to deck
@@ -91,18 +91,27 @@ func (g *game) playCard(c *model.Card) error {
 	return nil
 }
 
-func (g *game) isCardValid(c *model.Card) bool {
+func (g *game) isCardValid(c *model.Card) error {
+
+	if !g.players[g.turn].hand.hasCard(c) {
+		return errors.New("invalid card. card not found in you hand")
+	}
+
 	if len(g.desk.cards) == 0 {
-		return true
+		return nil
 	}
 
 	deskSuit := g.desk.getSuit()
 
 	if deskSuit == c.Suit {
-		return true
+		return nil
 	}
 
-	return !g.players[g.turn].hand.hasSuit(deskSuit)
+	if !g.players[g.turn].hand.hasSuit(deskSuit) {
+		return errors.New("card with invalid suit")
+	}
+
+	return nil
 }
 
 func (g *game) calculateTurnResult() {
