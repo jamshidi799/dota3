@@ -35,6 +35,7 @@ func (h *handler) Run() error {
 		return err
 	} else {
 		log.Printf("team %d won", winnerTeam)
+		h.clients.BroadcastEvent(event.NewWinnerTeamEvent(h.game.score.firstTeam, h.game.score.secondTeam))
 	}
 
 	// next set
@@ -114,5 +115,8 @@ func (h *handler) gameLoop() {
 				}
 			}
 		}
+
+		turnWinner, _ := h.game.calculateTurnResult()
+		h.clients.BroadcastEvent(event.NewTurnWinnerEvent(turnWinner))
 	}
 }

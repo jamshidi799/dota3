@@ -80,11 +80,6 @@ func (g *game) playCard(c *model.Card) error {
 	g.desk.add(c)
 	g.players[g.turn].hand.deleteCard(c.GetInt())
 
-	// check desk is full
-	if g.desk.isFull() {
-		g.calculateTurnResult()
-	}
-
 	// add turn. turn start from leaderPos and go to len(players) - 1 and then restarted to 0
 	g.turn = (g.turn + 1) % 4
 
@@ -114,7 +109,10 @@ func (g *game) isCardValid(c *model.Card) error {
 	return nil
 }
 
-func (g *game) calculateTurnResult() {
+func (g *game) calculateTurnResult() (int, error) {
+	if !g.desk.isFull() {
+		return -1, errors.New("turn is not ended")
+	}
 
 	maxCard := g.desk.cards[0]
 	maxIndex := 0
@@ -142,9 +140,12 @@ func (g *game) calculateTurnResult() {
 
 	// set new leaderPos
 	g.leaderPos = winnerPos
+	g.turn = winnerPos
 
 	// refresh desk
 	g.desk = newDesk()
+
+	return winnerPos, nil
 }
 
 func (g *game) isGameEnded() bool {

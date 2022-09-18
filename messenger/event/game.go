@@ -59,3 +59,31 @@ func NewPlayedCardEvent(card *model.Card, playerIndex int) *playedCardEvent {
 		PlayerIndex: playerIndex,
 	}
 }
+
+type turnWinnerEvent struct {
+	Meta *Metadata
+
+	WinnerPlayerPos int
+}
+
+func NewTurnWinnerEvent(winnerPlayerPos int) *turnWinnerEvent {
+	return &turnWinnerEvent{
+		Meta:            newMetadata("turnWinner"),
+		WinnerPlayerPos: winnerPlayerPos,
+	}
+}
+
+type winnerTeamEvent struct {
+	Meta *Metadata
+
+	FirstTeam  int
+	SecondTeam int
+}
+
+func NewWinnerTeamEvent(firstTeam int, secondTeam int) *winnerTeamEvent {
+	return &winnerTeamEvent{
+		Meta:       newMetadata("winnerTeam"),
+		FirstTeam:  firstTeam,
+		SecondTeam: secondTeam,
+	}
+}
