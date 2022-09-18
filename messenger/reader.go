@@ -17,6 +17,11 @@ func (c *Client) Read(schema any) {
 	}
 }
 
+func (c *Client) ReadText() string {
+	_, msg, _ := c.Connection.ReadMessage()
+	return string(msg)
+}
+
 type TestEvent struct {
 	Suit model.Suit
 	Type string

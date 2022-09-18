@@ -5,21 +5,13 @@ import (
 	"game/match"
 	"game/messenger"
 	"game/model"
+	"game/util"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"net/http"
 	"strconv"
 )
 
 var (
-	matches  = map[int]*match.Match{}
-	upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-		},
-	}
+	matches = map[int]*match.Match{}
 )
 
 func StartServer() error {
@@ -48,7 +40,7 @@ func joinMatch(c *gin.Context) {
 	matchId, _ := strconv.Atoi(c.Query("matchId"))
 
 	// create websocket connection
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	conn, err := util.UpgradeConnToWebsocket(c.Writer, c.Request)
 	if err != nil {
 		fmt.Println(err)
 		return
