@@ -20,7 +20,7 @@ func NewHandler(clients messenger.Clients) *handler {
 	return &handler{clients: clients}
 }
 
-func (h *handler) Run() error {
+func (h *handler) Start() error {
 
 	h.initGame()
 	h.setTrumpCaller()
@@ -28,30 +28,26 @@ func (h *handler) Run() error {
 	h.dealCards()
 	h.gameLoop()
 
-	// match ended
-	winnerTeam, err := h.game.getWinner()
-	if err != nil {
-		log.Println(err)
-		return err
-	} else {
-		log.Printf("team %d won", winnerTeam)
-		h.clients.BroadcastEvent(event.NewWinnerTeamEvent(h.game.score.firstTeam, h.game.score.secondTeam))
-	}
+	err := h.endMatch()
 
 	// next set
 
-	return nil
+	return err
 }
 
 func (h *handler) initGame() {
+	players := h.getPlayers()
+	h.game = newGame(players)
+	h.game.start()
+}
+
+func (h *handler) getPlayers() [4]*Player {
 	var players [4]*Player
 
 	for i := 0; i < 4; i++ {
 		players[i] = newPlayer(h.clients[i].Id, team(i%2), i, newHand(), false, h.clients[i])
 	}
-
-	h.game = newGame(players)
-	h.game.start()
+	return players
 }
 
 func (h *handler) setTrumpCaller() {
@@ -120,3 +116,18 @@ func (h *handler) gameLoop() {
 		h.clients.BroadcastEvent(event.NewTurnWinnerEvent(turnWinner))
 	}
 }
+
+
+func (h *handler) endMatch() error {
+	winnerTeam, err := h.game.getWinner()
+	if err != nil {
+		log.Println(err)
+		return err
+	} else {
+		log.Printf("team %d won", winnerTeam)
+		h.clients.BroadcastEvent(event.NewWinnerTeamEvent(h.game.score.firstTeam, h.game.score.secondTeam))
+	}
+
+	return nil
+}
+

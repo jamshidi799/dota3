@@ -9,8 +9,8 @@ func TestSetCards(t *testing.T) {
 	h := newHand()
 
 	cards := []model.Card{
-		{1, 2},
-		{14, 2},
+		{Rank: 1, Suit: 2},
+		{Rank: 14, Suit: 2},
 	}
 	h.setCards(cards)
 
@@ -29,8 +29,8 @@ func TestSetCards(t *testing.T) {
 func TestHasSuit(t *testing.T) {
 	d := newHand()
 	d.setCards([]model.Card{
-		{1, 2},
-		{14, 2},
+		{Rank: 1, Suit: 2},
+		{Rank: 14, Suit: 2},
 	})
 
 	if !d.hasSuit(model.Suit(2)) {
