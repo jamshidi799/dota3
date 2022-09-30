@@ -10,13 +10,12 @@ import (
 type Match struct {
 	Id          int
 	Type        model.MatchType
-	PlayerCount int // todo: MatchType should contain PlayerCount
 	Clients     messenger.Clients
 }
 
-func NewMatch(t model.MatchType, playerCount int) *Match {
+func NewMatch(t model.MatchType) *Match {
 	id := 1 // todo
-	return &Match{Id: id, Type: t, PlayerCount: playerCount, Clients: messenger.Clients{}}
+	return &Match{Id: id, Type: t, Clients: messenger.Clients{}}
 }
 
 func (m *Match) AddClient(client *messenger.Client) {
@@ -26,16 +25,19 @@ func (m *Match) AddClient(client *messenger.Client) {
 	msg := []byte(fmt.Sprintf("client %d joined", client.Id))
 	m.Clients.BroadcastMessage(msg)
 
-	// check if number of client is enough or not. if enough broadcast start match event
-	if len(m.Clients) == m.PlayerCount {
+	if m.shouldStartMatch() {
 		msg := []byte("match started")
 		m.Clients.BroadcastMessage(msg)
-		m.run()
+		m.start()
 	}
 
 }
 
-func (m *Match) run() {
+func (m *Match) shouldStartMatch() bool {
+	return len(m.Clients) == m.Type.PlayerCount
+}
+
+func (m *Match) start() {
 	handler := hokm.NewHandler(m.Clients)
-	handler.Run()
+	handler.Start()
 }

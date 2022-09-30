@@ -1,11 +1,14 @@
 package model
 
-type MatchType int
+type MatchType struct {
+	PlayerCount int
+	Type GameType
+}
+
+type GameType int
 
 const (
-	HOKM4 MatchType = iota
-	HOKM3
+	HOKM GameType = iota
 	SHELEM
-	BIDEL4
-	BIDEL5
+	BIDEL
 )
