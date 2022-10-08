@@ -6,13 +6,11 @@ import (
 	"log"
 )
 
-type Clients []*Client
-
 // BroadcastMessage todo: remove
 func (c Clients) BroadcastMessage(msg []byte) {
 	for _, client := range c {
-		if err := client.Connection.WriteMessage(websocket.TextMessage, msg); err != nil {
-			log.Println(err)
+		if err := client.write(msg); err != nil {
+			// todo: remove disconnected client
 		}
 	}
 }
@@ -24,34 +22,41 @@ func (c Clients) BroadcastEvent(event any) {
 	}
 
 	for _, client := range c {
-		if err := client.Connection.WriteMessage(websocket.TextMessage, data); err != nil {
-			log.Println(err)
+		if err := client.write(data); err != nil {
+			// todo: remove disconnected client
 		}
 	}
 }
 
-func (c Clients) BroadcastEventToOther(exceptionPlayerIndex int, event any) {
+func (c Clients) BroadcastEventToOther(exceptionPlayerId int, event any) {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return
 	}
 
-	for i, client := range c {
-		if i != exceptionPlayerIndex {
-			if err := client.Connection.WriteMessage(websocket.TextMessage, data); err != nil {
-				log.Println(err)
+	for id, client := range c {
+		if id != exceptionPlayerId {
+			if err := client.write(data); err != nil {
+				// todo: remove disconnected client
 			}
 		}
 	}
 }
 
-func (c *Client) SendEventToPlayer(event any) {
+func (c *Clients) SendEventToConnection(connectionId int, event any) error {
+	conn := (*c)[connectionId] // todo: remove disconnected client
 	data, err := json.Marshal(event)
 	if err != nil {
-		return
+		return nil
 	}
 
-	if err := c.Connection.WriteMessage(websocket.TextMessage, data); err != nil {
-		log.Println(err)
+	return conn.write(data)
+}
+
+func (c *Client) write(data []byte) error {
+	err := c.Connection.WriteMessage(websocket.TextMessage, data)
+	if err != nil {
+		log.Printf("%s, id: %d", err, c.Id)
 	}
+	return err
 }

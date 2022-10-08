@@ -8,9 +8,9 @@ import (
 )
 
 type Match struct {
-	Id          int
-	Type        model.MatchType
-	Clients     messenger.Clients
+	Id      int
+	Type    model.MatchType
+	Clients messenger.Clients
 }
 
 func NewMatch(t model.MatchType) *Match {
@@ -18,8 +18,21 @@ func NewMatch(t model.MatchType) *Match {
 	return &Match{Id: id, Type: t, Clients: messenger.Clients{}}
 }
 
+func (m *Match) FindClient(clientId int) *messenger.Client {
+	for _, c := range m.Clients {
+		if c.Id == clientId {
+			return c
+		}
+	}
+	return nil
+}
+
 func (m *Match) AddClient(client *messenger.Client) {
-	m.Clients = append(m.Clients, client)
+	if m.Type.PlayerCount <= len(m.Clients) {
+		return
+	}
+
+	m.Clients[client.Id] = client
 
 	// broadcast join event to other client
 	msg := []byte(fmt.Sprintf("client %d joined", client.Id))
@@ -30,7 +43,6 @@ func (m *Match) AddClient(client *messenger.Client) {
 		m.Clients.BroadcastMessage(msg)
 		m.start()
 	}
-
 }
 
 func (m *Match) shouldStartMatch() bool {
@@ -38,6 +50,6 @@ func (m *Match) shouldStartMatch() bool {
 }
 
 func (m *Match) start() {
-	handler := hokm.NewHandler(m.Clients)
+	handler := hokm.NewHandler(&m.Clients)
 	handler.Start()
 }

@@ -23,7 +23,7 @@ func StartServer() error {
 
 	matchType := model.MatchType{
 		PlayerCount: 4,
-		Type: model.HOKM,
+		Type:        model.HOKM,
 	}
 	matches[0] = match.NewMatch(matchType)
 
@@ -50,6 +50,6 @@ func joinMatch(c *gin.Context) {
 		return
 	}
 
-	handler := matches[matchId]
-	handler.AddClient(&messenger.Client{Id: userId, Username: "ali", Connection: conn})
+	match := matches[matchId]
+	match.AddClient(&messenger.Client{Id: userId, Username: "ali", Connection: conn})
 }

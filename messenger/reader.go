@@ -2,10 +2,14 @@ package messenger
 
 import (
 	"encoding/json"
-	"game/model"
 )
 
-func (c *Client) Read(schema any) {
+func (c *Clients) ReadFromConnection(connectionId int, schema any) {
+	conn := (*c)[connectionId] // todo: remove disconnected client
+	conn.read(schema)
+}
+
+func (c *Client) read(schema any) {
 	_, msg, err := c.Connection.ReadMessage()
 	if err != nil {
 		return
@@ -17,12 +21,7 @@ func (c *Client) Read(schema any) {
 	}
 }
 
-func (c *Client) ReadText() string {
+func (c *Client) readText() string {
 	_, msg, _ := c.Connection.ReadMessage()
 	return string(msg)
-}
-
-type TestEvent struct {
-	Suit model.Suit
-	Type string
 }

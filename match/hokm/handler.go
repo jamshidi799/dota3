@@ -12,11 +12,11 @@ import (
 const MaxRetryCount = 3
 
 type handler struct {
-	clients messenger.Clients
+	clients *messenger.Clients
 	game    *game
 }
 
-func NewHandler(clients messenger.Clients) *handler {
+func NewHandler(clients *messenger.Clients) *handler {
 	return &handler{clients: clients}
 }
 
@@ -45,7 +45,7 @@ func (h *handler) getPlayers() [4]*Player {
 	var players [4]*Player
 
 	for i := 0; i < 4; i++ {
-		players[i] = newPlayer(h.clients[i].Id, team(i%2), i, newHand(), false, h.clients[i])
+		players[i] = newPlayer((*h.clients)[i].Id, team(i%2), i, newHand(), false)
 	}
 	return players
 }
@@ -58,11 +58,11 @@ func (h *handler) setTrumpCaller() {
 
 func (h *handler) setTrump() {
 	trumpCallerFiveCards := h.game.dealFirstFiveCardToTrumpCaller()
-	h.game.getTrump().client.
-		SendEventToPlayer(event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
+	h.sendEventToPlayer(h.game.getTrumpId(), event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
 
 	var resp response.SetTrumpResponse
-	h.game.getTrump().client.Read(&resp)
+	h.readFromPlayer(h.game.getTrumpId(), &resp)
+
 	if resp.Suit != 0 {
 		h.game.setTrump(resp.Suit)
 	}
@@ -79,7 +79,7 @@ func (h *handler) dealCards() {
 			i++
 		}
 
-		player.client.SendEventToPlayer(event.NewDealCardEvent(h.game.trump, cards))
+		h.sendEventToPlayer(player.id, event.NewDealCardEvent(h.game.trump, cards))
 	}
 }
 
@@ -92,7 +92,7 @@ func (h *handler) gameLoop() {
 			for retry := 0; retry < MaxRetryCount; retry++ {
 
 				var resp response.PlayCardResponse
-				player.client.Read(&resp)
+				h.readFromPlayer(player.id, &resp)
 
 				card := &model.Card{
 					Rank: resp.Rank,
@@ -101,14 +101,18 @@ func (h *handler) gameLoop() {
 				err := h.game.playCard(card)
 
 				if err != nil {
-					player.client.SendEventToPlayer(event.NewErrorEvent(err.Error()))
+					h.sendEventToPlayer(player.id, event.NewErrorEvent(err.Error()))
 				} else {
 					playedCardEvent := event.NewPlayedCardEvent(card, player.position)
-					h.clients.BroadcastEventToOther(player.position, playedCardEvent)
+					h.clients.BroadcastEventToOther(player.id, playedCardEvent)
 
 					i++
 					break
 				}
+			}
+
+			if player == h.game.getCurrentPlayer() {
+				log.Println("you should do random move here") // todo
 			}
 		}
 
@@ -116,7 +120,6 @@ func (h *handler) gameLoop() {
 		h.clients.BroadcastEvent(event.NewTurnWinnerEvent(turnWinner))
 	}
 }
-
 
 func (h *handler) endMatch() error {
 	winnerTeam, err := h.game.getWinner()
@@ -131,3 +134,10 @@ func (h *handler) endMatch() error {
 	return nil
 }
 
+func (h *handler) sendEventToPlayer(playerId int, event any) {
+	h.clients.SendEventToConnection(playerId, event)
+}
+
+func (h *handler) readFromPlayer(playerId int, schema any) {
+	h.clients.ReadFromConnection(playerId, schema)
+}
