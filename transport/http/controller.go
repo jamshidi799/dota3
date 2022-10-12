@@ -51,5 +51,5 @@ func joinMatch(c *gin.Context) {
 	}
 
 	match := matches[matchId]
-	match.AddClient(&messenger.Client{Id: userId, Username: "ali", Connection: conn})
+	match.AddClient(messenger.NewClient(userId, "ali", conn))
 }

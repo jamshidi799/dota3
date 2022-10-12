@@ -20,8 +20,3 @@ func (c *Client) read(schema any) {
 		return
 	}
 }
-
-func (c *Client) readText() string {
-	_, msg, _ := c.Connection.ReadMessage()
-	return string(msg)
-}
