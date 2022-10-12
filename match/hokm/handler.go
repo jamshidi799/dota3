@@ -43,8 +43,8 @@ func (h *handler) initGame() {
 	h.game.start()
 }
 
-func (h *handler) getPlayers() [4]*Player {
-	var players [4]*Player
+func (h *handler) getPlayers() [4]*player {
+	var players [4]*player
 
 	position := 0
 	for _, client := range *h.clients {
@@ -84,14 +84,14 @@ func (h *handler) dealCards() {
 	h.game.dealCards()
 
 	for _, player := range h.game.players {
-		cards := make([]model.Card, len(player.hand.GetCards()))
+		cards := make([]model.Card, len(player.Hand.GetCards()))
 		i := 0
-		for _, card := range player.hand.GetCards() {
+		for _, card := range player.Hand.GetCards() {
 			cards[i] = card
 			i++
 		}
 
-		h.sendEventToPlayer(player.id, event.NewDealCardEvent(h.game.trump, cards))
+		h.sendEventToPlayer(player.Id, event.NewDealCardEvent(h.game.trump, cards))
 	}
 }
 
@@ -104,7 +104,7 @@ func (h *handler) gameLoop() {
 			for retry := 0; retry < MaxRetryCount; retry++ {
 
 				var resp response.PlayCardResponse
-				h.readFromPlayer(player.id, &resp)
+				h.readFromPlayer(player.Id, &resp)
 
 				card := &model.Card{
 					Rank: resp.Rank,
@@ -113,10 +113,10 @@ func (h *handler) gameLoop() {
 				err := h.game.playCard(card)
 
 				if err != nil {
-					h.sendEventToPlayer(player.id, event.NewErrorEvent(err.Error()))
+					h.sendEventToPlayer(player.Id, event.NewErrorEvent(err.Error()))
 				} else {
-					playedCardEvent := event.NewPlayedCardEvent(card, player.position)
-					h.clients.BroadcastEventToOther(player.id, playedCardEvent)
+					playedCardEvent := event.NewPlayedCardEvent(card, player.Position)
+					h.clients.BroadcastEventToOther(player.Id, playedCardEvent)
 
 					i++
 					break

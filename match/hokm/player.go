@@ -5,29 +5,25 @@ import (
 	"game/model"
 )
 
-type Player struct {
-	id            int
+type player struct {
+	model.Player
 	team          team
-	position      int
-	hand          *model.Hand
 	isTrumpCaller bool
 }
 
-func newPlayer(id int, team team, position int, hand *model.Hand, isTrumpCaller bool) *Player {
-	return &Player{
-		id:            id,
+func newPlayer(id int, team team, position int, hand *model.Hand, isTrumpCaller bool) *player {
+	return &player{
+		Player:        *model.NewPlayer(id, position, hand),
 		team:          team,
-		position:      position,
-		hand:          hand,
 		isTrumpCaller: isTrumpCaller,
 	}
 }
 
-func (p *Player) toDto() dto.PlayerDto {
+func (p *player) toDto() dto.PlayerDto {
 	return dto.PlayerDto{
-		Id:            p.id,
+		Id:            p.Id,
 		Team:          int(p.team),
-		Position:      p.position,
+		Position:      p.Position,
 		IsTrumpCaller: p.isTrumpCaller,
 	}
 }

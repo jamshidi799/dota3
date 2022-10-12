@@ -5,16 +5,12 @@ import (
 	"testing"
 )
 
-func generatePlayer() [4]*Player {
+func generatePlayer() [4]*player {
 
-	var players [4]*Player
+	var players [4]*player
 
 	for i := 0; i < 4; i++ {
-		players[i] = &Player{
-			team:     team(i % 2),
-			position: i,
-			hand:     model.NewHand(),
-		}
+		players[i] = newPlayer(i, team(i%2), i, model.NewHand(), false)
 	}
 	return players
 }
@@ -31,7 +27,7 @@ func TestStart(t *testing.T) {
 		t.Fatalf("g.turn((%d)) != g.leaderPos((%d))", g.turn, g.leaderPos)
 	}
 
-	if len(g.players[g.leaderPos].hand.GetCards()) != 5 {
+	if len(g.players[g.leaderPos].Hand.GetCards()) != 5 {
 		t.Fatal("leader Hand not set")
 	}
 }
@@ -42,8 +38,8 @@ func TestDealCards(t *testing.T) {
 	g.dealCards()
 
 	for i, player := range g.players {
-		if len(player.hand.GetCards()) != 13 {
-			t.Fatalf("player %d Hand len: %d, wanted: 13", i, len(player.hand.GetCards()))
+		if len(player.Hand.GetCards()) != 13 {
+			t.Fatalf("player %d Hand len: %d, wanted: 13", i, len(player.Hand.GetCards()))
 		}
 	}
 
@@ -51,7 +47,7 @@ func TestDealCards(t *testing.T) {
 	for _, card := range deck.GetCards() {
 		i := 0
 		for _, player := range g.players {
-			if _, ok := player.hand.GetCards()[card.GetInt()]; ok {
+			if _, ok := player.Hand.GetCards()[card.GetInt()]; ok {
 				i++
 			}
 		}
@@ -69,7 +65,7 @@ func TestPlayCard(t *testing.T) {
 	g.dealCards()
 
 	var validCard model.Card
-	for _, c := range g.players[g.turn].hand.GetCards() {
+	for _, c := range g.players[g.turn].Hand.GetCards() {
 		validCard = c
 		break
 	}
@@ -86,13 +82,13 @@ func TestPlayCard(t *testing.T) {
 		t.Fatalf("wrong card added to Desk. got %+v, want: %+v", deskCard, validCard)
 	}
 
-	if _, ok := g.players[g.leaderPos].hand.PopCard(validCard.GetInt()); ok == true {
+	if _, ok := g.players[g.leaderPos].Hand.PopCard(validCard.GetInt()); ok == true {
 		t.Fatal("played card not removed from player Hand")
 	}
 
 	turnBeforeInvalidMove := g.turn
 	var invalidCard model.Card
-	for _, c := range g.players[g.turn].hand.GetCards() {
+	for _, c := range g.players[g.turn].Hand.GetCards() {
 		if c.Suit != g.desk.GetSuit() {
 			invalidCard = c
 			break
@@ -107,7 +103,7 @@ func TestPlayCard(t *testing.T) {
 		t.Fatal("match turn changed after invalid move")
 	}
 
-	for _, c := range g.players[g.turn].hand.GetCards() {
+	for _, c := range g.players[g.turn].Hand.GetCards() {
 		if c.Suit == g.desk.GetSuit() {
 			validCard = c
 			break
