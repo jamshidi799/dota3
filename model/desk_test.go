@@ -1,17 +1,16 @@
-package hokm
+package model
 
 import (
-	"game/model"
 	"testing"
 )
 
 func TestAdd(t *testing.T) {
-	d := newDesk()
-	card := model.Card{
+	d := NewDesk()
+	card := Card{
 		Rank: 4,
 		Suit: 2,
 	}
-	d.add(&card)
+	d.Add(&card)
 
 	if len(d.cards) == 0 {
 		t.Fatalf("card did'nt added")
@@ -23,17 +22,17 @@ func TestAdd(t *testing.T) {
 }
 
 func TestGetSuit(t *testing.T) {
-	d := newDesk()
+	d := NewDesk()
 
 	suit := 2
-	card := model.Card{
+	card := Card{
 		Rank: 4,
-		Suit: model.Suit(suit),
+		Suit: Suit(suit),
 	}
-	d.add(&card)
+	d.Add(&card)
 
-	got := d.getSuit()
-	want := model.Suit(suit)
+	got := d.GetSuit()
+	want := Suit(suit)
 
 	if got != want {
 		t.Fatalf("got: %d, wanted: %d", got, want)

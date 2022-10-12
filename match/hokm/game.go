@@ -7,7 +7,7 @@ import (
 
 type game struct {
 	deck    *model.Deck
-	desk    *desk
+	desk    *model.Desk
 	players map[int]*Player
 
 	turn      int
@@ -20,7 +20,7 @@ func newGame(players [4]*Player) *game {
 	// init deck
 	deck := model.NewDeck()
 
-	desk := newDesk()
+	desk := model.NewDesk()
 
 	playerMap := map[int]*Player{}
 	for _, player := range players {
@@ -47,7 +47,7 @@ func (g *game) setTrumpCaller(position int) {
 
 func (g *game) dealFirstFiveCardToTrumpCaller() []model.Card {
 	cards := g.deck.Pop(5)
-	g.players[g.leaderPos].hand.setCards(cards)
+	g.players[g.leaderPos].hand.SetCards(cards)
 	return cards
 }
 
@@ -61,11 +61,11 @@ func (g *game) setTrump(suit model.Suit) {
 
 func (g *game) dealCards() {
 	// deal remained cards
-	g.players[g.leaderPos].hand.appendCards(g.deck.Pop(8))
+	g.players[g.leaderPos].hand.AppendCards(g.deck.Pop(8))
 
 	for i := 0; i < 4; i++ {
 		if i != g.leaderPos {
-			g.players[i].hand.setCards(g.deck.Pop(13))
+			g.players[i].hand.SetCards(g.deck.Pop(13))
 		}
 	}
 }
@@ -76,11 +76,11 @@ func (g *game) playCard(c *model.Card) error {
 		return err
 	}
 
-	// add card to deck
-	g.desk.add(c)
-	g.players[g.turn].hand.deleteCard(c.GetInt())
+	// Add card to deck
+	g.desk.Add(c)
+	g.players[g.turn].hand.DeleteCard(c.GetInt())
 
-	// add turn. turn start from leaderPos and go to len(players) - 1 and then restarted to 0
+	// Add turn. turn start from leaderPos and go to len(players) - 1 and then restarted to 0
 	g.turn = (g.turn + 1) % 4
 
 	return nil
@@ -88,21 +88,21 @@ func (g *game) playCard(c *model.Card) error {
 
 func (g *game) isCardValid(c *model.Card) error {
 
-	if !g.players[g.turn].hand.hasCard(c) {
-		return errors.New("invalid card. card not found in you hand")
+	if !g.players[g.turn].hand.HasCard(c) {
+		return errors.New("invalid card. card not found in you Hand")
 	}
 
-	if len(g.desk.cards) == 0 {
+	if len(g.desk.GetCards()) == 0 {
 		return nil
 	}
 
-	deskSuit := g.desk.getSuit()
+	deskSuit := g.desk.GetSuit()
 
 	if deskSuit == c.Suit {
 		return nil
 	}
 
-	if !g.players[g.turn].hand.hasSuit(deskSuit) {
+	if !g.players[g.turn].hand.HasSuit(deskSuit) {
 		return errors.New("card with invalid suit")
 	}
 
@@ -110,14 +110,14 @@ func (g *game) isCardValid(c *model.Card) error {
 }
 
 func (g *game) calculateTurnResult() (int, error) {
-	if !g.desk.isFull() {
+	if !g.desk.IsFull() {
 		return -1, errors.New("turn is not ended")
 	}
 
-	maxCard := g.desk.cards[0]
+	maxCard := g.desk.GetCards()[0]
 	maxIndex := 0
 
-	for i, deskCard := range g.desk.cards[1:] {
+	for i, deskCard := range g.desk.GetCards()[1:] {
 		if maxCard.Suit == deskCard.Suit && maxCard.Rank < deskCard.Rank {
 			maxCard = deskCard
 			maxIndex = i + 1
@@ -130,7 +130,7 @@ func (g *game) calculateTurnResult() (int, error) {
 	// get winner pos
 	winnerPos := (maxIndex + g.leaderPos) % 4
 
-	// add score
+	// Add score
 	winnerTeam := g.players[winnerPos].team
 	if winnerTeam == FirstTeam {
 		g.score.firstTeam += 1
@@ -142,8 +142,8 @@ func (g *game) calculateTurnResult() (int, error) {
 	g.leaderPos = winnerPos
 	g.turn = winnerPos
 
-	// refresh desk
-	g.desk = newDesk()
+	// refresh Desk
+	g.desk = model.NewDesk()
 
 	return winnerPos, nil
 }

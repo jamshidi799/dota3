@@ -48,7 +48,7 @@ func (h *handler) getPlayers() [4]*Player {
 
 	position := 0
 	for _, client := range *h.clients {
-		players[position] = newPlayer(client.Id, team(position%2), position, newHand(), false)
+		players[position] = newPlayer(client.Id, team(position%2), position, model.NewHand(), false)
 		position += 1
 	}
 	return players
@@ -84,9 +84,9 @@ func (h *handler) dealCards() {
 	h.game.dealCards()
 
 	for _, player := range h.game.players {
-		cards := make([]model.Card, len(player.hand.cards))
+		cards := make([]model.Card, len(player.hand.GetCards()))
 		i := 0
-		for _, card := range player.hand.cards {
+		for _, card := range player.hand.GetCards() {
 			cards[i] = card
 			i++
 		}

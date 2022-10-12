@@ -1,16 +1,19 @@
 package hokm
 
-import "game/messenger/dto"
+import (
+	"game/messenger/dto"
+	"game/model"
+)
 
 type Player struct {
 	id            int
 	team          team
 	position      int
-	hand          *hand
+	hand          *model.Hand
 	isTrumpCaller bool
 }
 
-func newPlayer(id int, team team, position int, hand *hand, isTrumpCaller bool) *Player {
+func newPlayer(id int, team team, position int, hand *model.Hand, isTrumpCaller bool) *Player {
 	return &Player{
 		id:            id,
 		team:          team,
