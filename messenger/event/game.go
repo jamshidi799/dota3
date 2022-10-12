@@ -1,55 +1,56 @@
 package event
 
 import (
+	"game/messenger/dto"
 	"game/model"
 )
 
 type gameStartedEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	TrumpCaller int
+	Players []dto.PlayerDto `json:"players"`
 }
 
-func NewGameStartedEvent(trumpCaller int) *gameStartedEvent {
+func NewGameStartedEvent(players []dto.PlayerDto) *gameStartedEvent {
 	return &gameStartedEvent{
-		Meta:        newMetadata("GameStarted"),
-		TrumpCaller: trumpCaller,
+		Meta:    newMetadata("gameStarted"),
+		Players: players,
 	}
 }
 
 type trumpCallerFirstCardEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	Cards []model.Card
+	Cards []model.Card `json:"cards"`
 }
 
 func NewTrumpCallerFirstCardEvent(cards []model.Card) *trumpCallerFirstCardEvent {
 	return &trumpCallerFirstCardEvent{
-		Meta:  newMetadata("CallerFirstCard"),
+		Meta:  newMetadata("callerFirstCard"),
 		Cards: cards,
 	}
 }
 
 type dealCardEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	Trump model.Suit
-	Hand  []model.Card
+	Trump model.Suit   `json:"trump"`
+	Hand  []model.Card `json:"hand"`
 }
 
 func NewDealCardEvent(trump model.Suit, hand []model.Card) *dealCardEvent {
 	return &dealCardEvent{
-		Meta:  newMetadata("DealCard"),
+		Meta:  newMetadata("dealCard"),
 		Trump: trump,
 		Hand:  hand,
 	}
 }
 
 type playedCardEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	Card        *model.Card
-	PlayerIndex int
+	Card        *model.Card `json:"card"`
+	PlayerIndex int         `json:"playerIndex"`
 }
 
 func NewPlayedCardEvent(card *model.Card, playerIndex int) *playedCardEvent {
@@ -61,9 +62,9 @@ func NewPlayedCardEvent(card *model.Card, playerIndex int) *playedCardEvent {
 }
 
 type turnWinnerEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	WinnerPlayerPos int
+	WinnerPlayerPos int `json:"winnerPlayerPos"`
 }
 
 func NewTurnWinnerEvent(winnerPlayerPos int) *turnWinnerEvent {
@@ -74,10 +75,10 @@ func NewTurnWinnerEvent(winnerPlayerPos int) *turnWinnerEvent {
 }
 
 type winnerTeamEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	FirstTeam  int
-	SecondTeam int
+	FirstTeam  int `json:"firstTeam"`
+	SecondTeam int `json:"secondTeam"`
 }
 
 func NewWinnerTeamEvent(firstTeam int, secondTeam int) *winnerTeamEvent {

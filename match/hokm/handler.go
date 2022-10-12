@@ -3,6 +3,7 @@ package hokm
 import (
 	"game/match/hokm/response"
 	"game/messenger"
+	"game/messenger/dto"
 	"game/messenger/event"
 	"game/model"
 	"log"
@@ -24,6 +25,7 @@ func (h *handler) Start() error {
 
 	h.initGame()
 	h.setTrumpCaller()
+	h.sendStartMatchEvent()
 	h.setTrump()
 	h.dealCards()
 	h.gameLoop()
@@ -44,8 +46,10 @@ func (h *handler) initGame() {
 func (h *handler) getPlayers() [4]*Player {
 	var players [4]*Player
 
-	for i := 0; i < 4; i++ {
-		players[i] = newPlayer((*h.clients)[i].Id, team(i%2), i, newHand(), false)
+	position := 0
+	for _, client := range *h.clients {
+		players[position] = newPlayer(client.Id, team(position%2), position, newHand(), false)
+		position += 1
 	}
 	return players
 }
@@ -53,7 +57,15 @@ func (h *handler) getPlayers() [4]*Player {
 func (h *handler) setTrumpCaller() {
 	trumpCaller := rand.Intn(4)
 	h.game.setTrumpCaller(trumpCaller)
-	h.clients.BroadcastEvent(event.NewGameStartedEvent(trumpCaller))
+}
+
+func (h *handler) sendStartMatchEvent() {
+	var players []dto.PlayerDto
+	for _, player := range h.game.players {
+		players = append(players, player.toDto())
+	}
+
+	h.clients.BroadcastEvent(event.NewGameStartedEvent(players))
 }
 
 func (h *handler) setTrump() {

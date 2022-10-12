@@ -8,7 +8,7 @@ type errorEvent struct {
 
 func NewErrorEvent(message string) *errorEvent {
 	return &errorEvent{
-		Meta:    newMetadata("Error"),
+		Meta:    newMetadata("error"),
 		Message: message,
 	}
 }

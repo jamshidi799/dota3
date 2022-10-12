@@ -1,9 +1,9 @@
 package match
 
 import (
-	"fmt"
 	"game/match/hokm"
 	"game/messenger"
+	"game/messenger/event"
 	"game/model"
 )
 
@@ -34,13 +34,15 @@ func (m *Match) AddClient(client *messenger.Client) {
 
 	m.Clients[client.Id] = client
 
-	// broadcast join event to other client
-	msg := []byte(fmt.Sprintf("client %d joined", client.Id))
-	m.Clients.BroadcastMessage(msg)
+	var playersId []int
+	for id := range m.Clients {
+		playersId = append(playersId, id)
+	}
+
+	joinEvent := event.NewJoinPlayerEvent(playersId)
+	m.Clients.BroadcastEvent(joinEvent)
 
 	if m.shouldStartMatch() {
-		msg := []byte("match started")
-		m.Clients.BroadcastMessage(msg)
 		m.start()
 	}
 }

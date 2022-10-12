@@ -1,5 +1,7 @@
 package hokm
 
+import "game/messenger/dto"
+
 type Player struct {
 	id            int
 	team          team
@@ -15,5 +17,14 @@ func newPlayer(id int, team team, position int, hand *hand, isTrumpCaller bool) 
 		position:      position,
 		hand:          hand,
 		isTrumpCaller: isTrumpCaller,
+	}
+}
+
+func (p *Player) toDto() dto.PlayerDto {
+	return dto.PlayerDto{
+		Id:            p.id,
+		Team:          int(p.team),
+		Position:      p.position,
+		IsTrumpCaller: p.isTrumpCaller,
 	}
 }

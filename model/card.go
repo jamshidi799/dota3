@@ -5,8 +5,8 @@ type Suit int
 type Rank int
 
 type Card struct {
-	Rank Rank
-	Suit Suit
+	Rank Rank `json:"rank"`
+	Suit Suit `json:"suit"`
 }
 
 const (
