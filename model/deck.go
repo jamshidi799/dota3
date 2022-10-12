@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Deck todo: use []*Card
 type Deck struct {
 	cards []Card
 }

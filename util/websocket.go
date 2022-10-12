@@ -1,6 +1,7 @@
 package util
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
 )
@@ -13,6 +14,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func UpgradeConnToWebsocket(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
-	return upgrader.Upgrade(w, r, nil)
+func UpgradeConnToWebsocket(w *gin.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
+	return upgrader.Upgrade(*w, r, nil)
 }

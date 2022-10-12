@@ -3,7 +3,7 @@ package http
 import (
 	"fmt"
 	"game/match"
-	"game/messenger"
+	"game/messenger/client"
 	"game/model"
 	"game/util"
 	"github.com/gin-gonic/gin"
@@ -44,12 +44,12 @@ func joinMatch(c *gin.Context) {
 	matchId, _ := strconv.Atoi(c.Query("matchId"))
 
 	// create websocket connection
-	conn, err := util.UpgradeConnToWebsocket(c.Writer, c.Request)
+	conn, err := util.UpgradeConnToWebsocket(&c.Writer, c.Request)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	match := matches[matchId]
-	match.AddClient(messenger.NewClient(userId, "ali", conn))
+	match.AddClient(client.NewUserClient(userId, "ali", conn))
 }

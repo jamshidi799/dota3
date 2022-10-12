@@ -2,7 +2,7 @@ package hokm
 
 import (
 	"game/match/hokm/response"
-	"game/messenger"
+	"game/messenger/client"
 	"game/messenger/dto"
 	"game/messenger/event"
 	"game/model"
@@ -13,11 +13,11 @@ import (
 const MaxRetryCount = 3
 
 type handler struct {
-	clients *messenger.Clients
+	clients client.Clients
 	game    *game
 }
 
-func NewHandler(clients *messenger.Clients) *handler {
+func NewHandler(clients client.Clients) *handler {
 	return &handler{clients: clients}
 }
 
@@ -47,8 +47,8 @@ func (h *handler) getPlayers() [4]*player {
 	var players [4]*player
 
 	position := 0
-	for _, client := range *h.clients {
-		players[position] = newPlayer(client.Id, team(position%2), position, model.NewHand(), false)
+	for _, client := range h.clients {
+		players[position] = newPlayer(client.GetId(), team(position%2), position, model.NewHand(), false)
 		position += 1
 	}
 	return players
@@ -146,6 +146,7 @@ func (h *handler) endMatch() error {
 	return nil
 }
 
+// todo: convert any to something better
 func (h *handler) sendEventToPlayer(playerId int, event any) {
 	h.clients.SendEventToConnection(playerId, event)
 }

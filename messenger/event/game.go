@@ -5,14 +5,14 @@ import (
 	"game/model"
 )
 
-type gameStartedEvent struct {
+type GameStartedEvent struct {
 	Meta *Metadata `json:"meta"`
 
 	Players []dto.PlayerDto `json:"players"`
 }
 
-func NewGameStartedEvent(players []dto.PlayerDto) *gameStartedEvent {
-	return &gameStartedEvent{
+func NewGameStartedEvent(players []dto.PlayerDto) *GameStartedEvent {
+	return &GameStartedEvent{
 		Meta:    newMetadata("gameStarted"),
 		Players: players,
 	}

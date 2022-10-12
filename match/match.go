@@ -2,7 +2,7 @@ package match
 
 import (
 	"game/match/hokm"
-	"game/messenger"
+	"game/messenger/client"
 	"game/messenger/event"
 	"game/model"
 )
@@ -10,29 +10,30 @@ import (
 type Match struct {
 	Id      int
 	Type    model.MatchType
-	Clients messenger.Clients
+	Clients client.Clients
 }
 
 func NewMatch(t model.MatchType) *Match {
 	id := 1 // todo
-	return &Match{Id: id, Type: t, Clients: messenger.Clients{}}
+	return &Match{Id: id, Type: t, Clients: client.Clients{}}
 }
 
-func (m *Match) FindClient(clientId int) *messenger.Client {
+func (m *Match) FindClient(clientId int) client.Client {
 	for _, c := range m.Clients {
-		if c.Id == clientId {
+
+		if c.GetId() == clientId {
 			return c
 		}
 	}
 	return nil
 }
 
-func (m *Match) AddClient(client *messenger.Client) {
+func (m *Match) AddClient(client client.Client) {
 	if m.Type.PlayerCount <= len(m.Clients) {
 		return
 	}
 
-	m.Clients[client.Id] = client
+	m.Clients[client.GetId()] = client
 
 	var playersId []int
 	for id := range m.Clients {
@@ -52,6 +53,6 @@ func (m *Match) shouldStartMatch() bool {
 }
 
 func (m *Match) start() {
-	handler := hokm.NewHandler(&m.Clients)
+	handler := hokm.NewHandler(m.Clients)
 	handler.Start()
 }

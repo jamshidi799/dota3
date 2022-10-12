@@ -2,7 +2,7 @@ package hokm
 
 import (
 	"fmt"
-	"game/messenger"
+	"game/messenger/client"
 	"game/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -22,12 +22,12 @@ func mustDialWS(t *testing.T, url string) *websocket.Conn {
 }
 
 func createHandler(t *testing.T, serverAddr string) *handler {
-	var clients messenger.Clients
+	var clients client.Clients
 
 	for i := 0; i < 4; i++ {
 		conn := mustDialWS(t, "ws"+strings.TrimPrefix(serverAddr, "http")+fmt.Sprintf("/join?matchId=0&userId=%d", i))
-		client := &messenger.Client{Id: 0, Username: "ali", Connection: conn}
-		clients = append(clients, client)
+		client := client.NewUserClient(0, "ali", conn)
+		clients[i] = client
 	}
 
 	return NewHandler(clients)
@@ -37,7 +37,7 @@ func startServer() http.Handler {
 	r := gin.Default()
 
 	r.GET("/join", func(c *gin.Context) {
-		_, _ = util.UpgradeConnToWebsocket(c.Writer, c.Request)
+		_, _ = util.UpgradeConnToWebsocket(&c.Writer, c.Request)
 	})
 
 	return r.Handler()
