@@ -1,8 +1,8 @@
 package client
 
 type Client interface {
-	write(event any) error
-	read(schema any)
+	send(event any) error
+	receive(schema any)
 	GetId() int
 }
 

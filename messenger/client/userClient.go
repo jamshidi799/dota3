@@ -25,7 +25,7 @@ func (u *UserClient) GetId() int {
 	return u.id
 }
 
-func (u *UserClient) write(event any) error {
+func (u *UserClient) send(event any) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (u *UserClient) write(event any) error {
 	return err
 }
 
-func (u *UserClient) read(schema any) {
+func (u *UserClient) receive(schema any) {
 	_, msg, err := u.Connection.ReadMessage()
 	if err != nil {
 		return

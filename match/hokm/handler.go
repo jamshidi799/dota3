@@ -70,10 +70,10 @@ func (h *handler) sendStartMatchEvent() {
 
 func (h *handler) setTrump() {
 	trumpCallerFiveCards := h.game.dealFirstFiveCardToTrumpCaller()
-	h.sendEventToPlayer(h.game.getTrumpId(), event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
+	h.sendEventToPlayer(h.game.getTrumpCallerId(), event.NewTrumpCallerFirstCardEvent(trumpCallerFiveCards))
 
 	var resp response.SetTrumpResponse
-	h.readFromPlayer(h.game.getTrumpId(), &resp)
+	h.readFromPlayer(h.game.getTrumpCallerId(), &resp)
 
 	if resp.Suit != 0 {
 		h.game.setTrump(resp.Suit)
@@ -84,14 +84,7 @@ func (h *handler) dealCards() {
 	h.game.dealCards()
 
 	for _, player := range h.game.players {
-		cards := make([]model.Card, len(player.Hand.GetCards()))
-		i := 0
-		for _, card := range player.Hand.GetCards() {
-			cards[i] = card
-			i++
-		}
-
-		h.sendEventToPlayer(player.Id, event.NewDealCardEvent(h.game.trump, cards))
+		h.sendEventToPlayer(player.Id, event.NewDealCardEvent(h.game.trump, player.Hand.GetCards()))
 	}
 }
 

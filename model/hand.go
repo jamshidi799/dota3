@@ -4,6 +4,10 @@ type Hand struct {
 	cards map[int]Card
 }
 
+func NewHandFromCards(cards map[int]Card) *Hand {
+	return &Hand{cards: cards}
+}
+
 func NewHand() *Hand {
 	return &Hand{
 		cards: map[int]Card{},

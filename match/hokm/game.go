@@ -51,7 +51,7 @@ func (g *game) dealFirstFiveCardToTrumpCaller() []model.Card {
 	return cards
 }
 
-func (g *game) getTrumpId() int {
+func (g *game) getTrumpCallerId() int {
 	return g.players[g.leaderPos].Id
 }
 

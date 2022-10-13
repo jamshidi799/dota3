@@ -25,7 +25,12 @@ func StartServer() error {
 		PlayerCount: 4,
 		Type:        model.HOKM,
 	}
+
 	matches[0] = match.NewMatch(matchType)
+	matches[0].AddClient(client.NewBotClient(0, "ali"))
+	matches[0].AddClient(client.NewBotClient(1, "ali"))
+	matches[0].AddClient(client.NewBotClient(2, "ali"))
+	matches[0].AddClient(client.NewBotClient(3, "ali"))
 
 	return r.Run()
 }
@@ -51,5 +56,9 @@ func joinMatch(c *gin.Context) {
 	}
 
 	match := matches[matchId]
+	//match.AddClient(client.NewUserClient(userId, "ali", conn))
 	match.AddClient(client.NewUserClient(userId, "ali", conn))
+	match.AddClient(client.NewBotClient(1, "ali"))
+	match.AddClient(client.NewBotClient(2, "ali"))
+	match.AddClient(client.NewBotClient(3, "ali"))
 }

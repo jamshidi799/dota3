@@ -18,71 +18,71 @@ func NewGameStartedEvent(players []dto.PlayerDto) *GameStartedEvent {
 	}
 }
 
-type trumpCallerFirstCardEvent struct {
+type TrumpCallerFirstCardEvent struct {
 	Meta *Metadata `json:"meta"`
 
 	Cards []model.Card `json:"cards"`
 }
 
-func NewTrumpCallerFirstCardEvent(cards []model.Card) *trumpCallerFirstCardEvent {
-	return &trumpCallerFirstCardEvent{
+func NewTrumpCallerFirstCardEvent(cards []model.Card) *TrumpCallerFirstCardEvent {
+	return &TrumpCallerFirstCardEvent{
 		Meta:  newMetadata("callerFirstCard"),
 		Cards: cards,
 	}
 }
 
-type dealCardEvent struct {
+type DealCardEvent struct {
 	Meta *Metadata `json:"meta"`
 
-	Trump model.Suit   `json:"trump"`
-	Hand  []model.Card `json:"hand"`
+	Trump model.Suit         `json:"trump"`
+	Hand  map[int]model.Card `json:"hand"`
 }
 
-func NewDealCardEvent(trump model.Suit, hand []model.Card) *dealCardEvent {
-	return &dealCardEvent{
+func NewDealCardEvent(trump model.Suit, hand map[int]model.Card) *DealCardEvent {
+	return &DealCardEvent{
 		Meta:  newMetadata("dealCard"),
 		Trump: trump,
 		Hand:  hand,
 	}
 }
 
-type playedCardEvent struct {
+type PlayedCardEvent struct {
 	Meta *Metadata `json:"meta"`
 
 	Card        *model.Card `json:"card"`
 	PlayerIndex int         `json:"playerIndex"`
 }
 
-func NewPlayedCardEvent(card *model.Card, playerIndex int) *playedCardEvent {
-	return &playedCardEvent{
+func NewPlayedCardEvent(card *model.Card, playerIndex int) *PlayedCardEvent {
+	return &PlayedCardEvent{
 		Meta:        newMetadata("playedCard"),
 		Card:        card,
 		PlayerIndex: playerIndex,
 	}
 }
 
-type turnWinnerEvent struct {
+type TurnWinnerEvent struct {
 	Meta *Metadata `json:"meta"`
 
 	WinnerPlayerPos int `json:"winnerPlayerPos"`
 }
 
-func NewTurnWinnerEvent(winnerPlayerPos int) *turnWinnerEvent {
-	return &turnWinnerEvent{
+func NewTurnWinnerEvent(winnerPlayerPos int) *TurnWinnerEvent {
+	return &TurnWinnerEvent{
 		Meta:            newMetadata("turnWinner"),
 		WinnerPlayerPos: winnerPlayerPos,
 	}
 }
 
-type winnerTeamEvent struct {
+type WinnerTeamEvent struct {
 	Meta *Metadata `json:"meta"`
 
 	FirstTeam  int `json:"firstTeam"`
 	SecondTeam int `json:"secondTeam"`
 }
 
-func NewWinnerTeamEvent(firstTeam int, secondTeam int) *winnerTeamEvent {
-	return &winnerTeamEvent{
+func NewWinnerTeamEvent(firstTeam int, secondTeam int) *WinnerTeamEvent {
+	return &WinnerTeamEvent{
 		Meta:       newMetadata("winnerTeam"),
 		FirstTeam:  firstTeam,
 		SecondTeam: secondTeam,
