@@ -102,7 +102,7 @@ func (g *game) isCardValid(c *model.Card) error {
 		return nil
 	}
 
-	if !g.players[g.turn].Hand.HasSuit(deskSuit) {
+	if g.players[g.turn].Hand.HasSuit(deskSuit) {
 		return errors.New("card with invalid suit")
 	}
 

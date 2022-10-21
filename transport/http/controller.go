@@ -6,8 +6,10 @@ import (
 	"game/messenger/client"
 	"game/model"
 	"game/util"
-	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -27,10 +29,10 @@ func StartServer() error {
 	}
 
 	matches[0] = match.NewMatch(matchType)
-	matches[0].AddClient(client.NewBotClient(0, "ali"))
-	matches[0].AddClient(client.NewBotClient(1, "ali"))
-	matches[0].AddClient(client.NewBotClient(2, "ali"))
-	matches[0].AddClient(client.NewBotClient(3, "ali"))
+	//matches[0].AddClient(client.NewBotClient(0, "ali"))
+	// matches[0].AddClient(client.NewBotClient(1, "ali"))
+	// matches[0].AddClient(client.NewBotClient(2, "ali"))
+	// matches[0].AddClient(client.NewBotClient(3, "ali"))
 
 	return r.Run()
 }
@@ -56,9 +58,11 @@ func joinMatch(c *gin.Context) {
 	}
 
 	match := matches[matchId]
-	//match.AddClient(client.NewUserClient(userId, "ali", conn))
 	match.AddClient(client.NewUserClient(userId, "ali", conn))
-	match.AddClient(client.NewBotClient(1, "ali"))
-	match.AddClient(client.NewBotClient(2, "ali"))
-	match.AddClient(client.NewBotClient(3, "ali"))
+	go func() {
+		time.Sleep(time.Second)
+		matches[0].AddClient(client.NewBotClient(3, "ali"))
+		matches[0].AddClient(client.NewBotClient(20, "ali"))
+		matches[0].AddClient(client.NewBotClient(3303, "ali"))
+	}()
 }

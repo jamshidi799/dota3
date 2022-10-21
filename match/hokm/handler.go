@@ -8,6 +8,8 @@ import (
 	"game/model"
 	"log"
 	"math/rand"
+
+	"golang.org/x/exp/maps"
 )
 
 const MaxRetryCount = 3
@@ -84,7 +86,9 @@ func (h *handler) dealCards() {
 	h.game.dealCards()
 
 	for _, player := range h.game.players {
-		h.sendEventToPlayer(player.Id, event.NewDealCardEvent(h.game.trump, player.Hand.GetCards()))
+		hand := make(map[int]model.Card)
+		maps.Copy(hand, player.Hand.GetCards())
+		h.sendEventToPlayer(player.Id, event.NewDealCardEvent(h.game.trump, hand))
 	}
 }
 
@@ -109,7 +113,7 @@ func (h *handler) gameLoop() {
 					h.sendEventToPlayer(player.Id, event.NewErrorEvent(err.Error()))
 				} else {
 					playedCardEvent := event.NewPlayedCardEvent(card, player.Position)
-					h.clients.BroadcastEventToOther(player.Id, playedCardEvent)
+					h.clients.BroadcastEvent(playedCardEvent)
 
 					i++
 					break
@@ -118,6 +122,7 @@ func (h *handler) gameLoop() {
 
 			if player == h.game.getCurrentPlayer() {
 				log.Println("you should do random move here") // todo
+				return
 			}
 		}
 

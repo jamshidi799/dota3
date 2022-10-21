@@ -5,6 +5,7 @@ import (
 	"game/messenger/dto"
 	"game/messenger/event"
 	"game/model"
+
 	"golang.org/x/exp/slices"
 )
 
@@ -91,19 +92,26 @@ func (h *HokmBot) Respond(schema any) {
 }
 
 func (h *HokmBot) SetTrump(resp *response.SetTrumpResponse) {
-	resp.Suit = model.SAPDE
+	resp.Suit = model.SPADE
 }
 
 func (h *HokmBot) PlayCard(resp *response.PlayCardResponse) {
-	deskSuit := h.desk[0].Suit
 	var candide model.Card
-	for _, card := range h.hand {
-		if card.Suit == deskSuit {
+	if len(h.desk) == 0 {
+		for _, card := range h.hand {
 			candide = card
 			break
 		}
+	} else {
+		deskSuit := h.desk[0].Suit
+		for _, card := range h.hand {
+			if card.Suit == deskSuit {
+				candide = card
+				break
+			}
 
-		candide = card
+			candide = card
+		}
 	}
 
 	delete(h.hand, candide.GetInt())

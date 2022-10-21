@@ -1,9 +1,9 @@
 package event
 
 type errorEvent struct {
-	Meta *Metadata
+	Meta *Metadata `json:"meta"`
 
-	Message string
+	Message string `json:"message"`
 }
 
 func NewErrorEvent(message string) *errorEvent {

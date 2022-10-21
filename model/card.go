@@ -10,10 +10,10 @@ type Card struct {
 }
 
 const (
-	SAPDE Suit = iota + 1
+	SPADE Suit = iota + 1
 	DIAMOND
 	HEART
-	CLIUB
+	CLUB
 )
 
 const (
