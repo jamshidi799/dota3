@@ -39,6 +39,9 @@ func (h *HokmBot) Receive(msg any) error {
 
 	case *event.PlayedCardEvent:
 		h.handlePlayedCardEvent(msg.(*event.PlayedCardEvent))
+
+	case *event.TurnWinnerEvent:
+		h.handleTurnWinnerEvent(msg.(*event.TurnWinnerEvent))
 	}
 
 	return nil
@@ -79,6 +82,10 @@ func (h *HokmBot) handleDealCardEvent(e *event.DealCardEvent) {
 
 func (h *HokmBot) handlePlayedCardEvent(e *event.PlayedCardEvent) {
 	h.desk = append(h.desk, e.Card)
+}
+
+func (h *HokmBot) handleTurnWinnerEvent(e *event.TurnWinnerEvent) {
+	h.desk = []*model.Card{}
 }
 
 func (h *HokmBot) Respond(schema any) {
