@@ -27,17 +27,14 @@ func NewHandler(clients client.Clients) *handler {
 func (h *handler) Start() error {
 
 	h.initGame()
+
 	h.setTrumpCaller()
 	h.sendStartMatchEvent()
 	h.setTrump()
 	h.dealCards()
 	h.gameLoop()
 
-	err := h.endMatch()
-
-	// next set
-
-	return err
+	return h.endMatch()
 }
 
 func (h *handler) initGame() {
@@ -51,7 +48,7 @@ func (h *handler) getPlayers() [4]*player {
 
 	position := 0
 	for _, client := range h.clients {
-		players[position] = newPlayer(client.GetId(), team(position%2), position, model.NewHand(), false)
+		players[position] = newPlayer(client.GetId(), client.GetUsername(), team(position%2), position, model.NewHand(), false)
 		position += 1
 	}
 	return players
@@ -130,6 +127,7 @@ func (h *handler) gameLoop() {
 
 		turnWinner, _ := h.game.calculateTurnResult()
 		h.clients.BroadcastEvent(event.NewTurnWinnerEvent(turnWinner))
+		time.Sleep(time.Second * 5)
 	}
 }
 

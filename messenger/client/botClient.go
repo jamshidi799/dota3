@@ -21,6 +21,10 @@ func (b *BotClient) GetId() int {
 	return b.id
 }
 
+func (b *BotClient) GetUsername() string {
+	return b.username
+}
+
 func (b *BotClient) send(event any) error {
 	return b.Bot.Receive(event)
 }

@@ -4,6 +4,7 @@ type Client interface {
 	send(event any) error
 	receive(schema any)
 	GetId() int
+	GetUsername() string
 }
 
 type BaseClient struct {

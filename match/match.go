@@ -35,12 +35,12 @@ func (m *Match) AddClient(client client.Client) {
 
 	m.Clients[client.GetId()] = client
 
-	var playersId []int
-	for id := range m.Clients {
-		playersId = append(playersId, id)
+	var playersUsername []string
+	for _, client := range m.Clients {
+		playersUsername = append(playersUsername, client.GetUsername())
 	}
 
-	joinEvent := event.NewJoinPlayerEvent(playersId)
+	joinEvent := event.NewJoinPlayerEvent(playersUsername)
 	m.Clients.BroadcastEvent(joinEvent)
 
 	if m.shouldStartMatch() {

@@ -3,12 +3,12 @@ package event
 type joinPlayerEvent struct {
 	Meta *Metadata `json:"meta"`
 
-	PlayersId []int `json:"playersId"`
+	Players []string `json:"players"`
 }
 
-func NewJoinPlayerEvent(playerId []int) *joinPlayerEvent {
+func NewJoinPlayerEvent(playersUsername []string) *joinPlayerEvent {
 	return &joinPlayerEvent{
-		Meta:      newMetadata("joinPlayer"),
-		PlayersId: playerId,
+		Meta:    newMetadata("joinPlayer"),
+		Players: playersUsername,
 	}
 }

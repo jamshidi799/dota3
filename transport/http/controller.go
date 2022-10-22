@@ -6,10 +6,12 @@ import (
 	"game/messenger/client"
 	"game/model"
 	"game/util"
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 var (
@@ -29,10 +31,6 @@ func StartServer() error {
 	}
 
 	matches[0] = match.NewMatch(matchType)
-	//matches[0].AddClient(client.NewBotClient(0, "ali"))
-	// matches[0].AddClient(client.NewBotClient(1, "ali"))
-	// matches[0].AddClient(client.NewBotClient(2, "ali"))
-	// matches[0].AddClient(client.NewBotClient(3, "ali"))
 
 	return r.Run()
 }
@@ -42,15 +40,22 @@ func signup(c *gin.Context) {
 }
 
 func createMatch(c *gin.Context) {
-	// todo
+	matchId := int(uuid.New().ID())
+	matchType := model.MatchType{
+		PlayerCount: 4,
+		Type:        model.HOKM,
+	}
+
+	matches[matchId] = match.NewMatch(matchType)
+	c.JSON(http.StatusOK, gin.H{
+		"id": matchId,
+	})
 }
 
 func joinMatch(c *gin.Context) {
-
-	userId, _ := strconv.Atoi(c.Query("userId"))
+	username := c.Query("username")
 	matchId, _ := strconv.Atoi(c.Query("matchId"))
 
-	// create websocket connection
 	conn, err := util.UpgradeConnToWebsocket(&c.Writer, c.Request)
 	if err != nil {
 		fmt.Println(err)
@@ -58,11 +63,12 @@ func joinMatch(c *gin.Context) {
 	}
 
 	match := matches[matchId]
-	match.AddClient(client.NewUserClient(userId, "ali", conn))
+
+	match.AddClient(client.NewUserClient(len(match.Clients), username, conn))
 	go func() {
 		time.Sleep(time.Second)
-		matches[0].AddClient(client.NewBotClient(3, "ali"))
-		matches[0].AddClient(client.NewBotClient(20, "ali"))
-		matches[0].AddClient(client.NewBotClient(3303, "ali"))
+		matches[0].AddClient(client.NewBotClient(1, "bot1"))
+		matches[0].AddClient(client.NewBotClient(3, "bot3"))
+		matches[0].AddClient(client.NewBotClient(2, "bot2"))
 	}()
 }

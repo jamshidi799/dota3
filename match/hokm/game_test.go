@@ -10,7 +10,7 @@ func generatePlayer() [4]*player {
 	var players [4]*player
 
 	for i := 0; i < 4; i++ {
-		players[i] = newPlayer(i, team(i%2), i, model.NewHand(), false)
+		players[i] = newPlayer(i, "ali", team(i%2), i, model.NewHand(), false)
 	}
 	return players
 }

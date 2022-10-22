@@ -11,9 +11,9 @@ type player struct {
 	isTrumpCaller bool
 }
 
-func newPlayer(id int, team team, position int, hand *model.Hand, isTrumpCaller bool) *player {
+func newPlayer(id int, username string, team team, position int, hand *model.Hand, isTrumpCaller bool) *player {
 	return &player{
-		Player:        *model.NewPlayer(id, position, hand),
+		Player:        *model.NewPlayer(id, username, position, hand),
 		team:          team,
 		isTrumpCaller: isTrumpCaller,
 	}
@@ -22,6 +22,7 @@ func newPlayer(id int, team team, position int, hand *model.Hand, isTrumpCaller 
 func (p *player) toDto() dto.PlayerDto {
 	return dto.PlayerDto{
 		Id:            p.Id,
+		Username:      p.Username,
 		Team:          int(p.team),
 		Position:      p.Position,
 		IsTrumpCaller: p.isTrumpCaller,

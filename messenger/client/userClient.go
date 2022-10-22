@@ -2,8 +2,9 @@ package client
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
 	"log"
+
+	"github.com/gorilla/websocket"
 )
 
 type UserClient struct {
@@ -23,6 +24,10 @@ func NewUserClient(id int, username string, connection *websocket.Conn) *UserCli
 
 func (u *UserClient) GetId() int {
 	return u.id
+}
+
+func (u *UserClient) GetUsername() string {
+	return u.username
 }
 
 func (u *UserClient) send(event any) error {
