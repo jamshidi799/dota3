@@ -121,7 +121,7 @@ func (g *game) calculateTurnResult() (int, error) {
 		if maxCard.Suit == deskCard.Suit && maxCard.Rank < deskCard.Rank {
 			maxCard = deskCard
 			maxIndex = i + 1
-		} else if deskCard.Suit == g.trump {
+		} else if deskCard.Suit == g.trump && maxCard.Rank < deskCard.Rank {
 			maxCard = deskCard
 			maxIndex = i + 1
 		}

@@ -26,22 +26,22 @@ func NewHokmBot(id int) *HokmBot {
 }
 
 func (h *HokmBot) Receive(msg any) error {
-	switch msg.(type) {
+	switch msg := msg.(type) {
 
 	case *event.GameStartedEvent:
-		h.handleGameStartedEvent(msg.(*event.GameStartedEvent))
+		h.handleGameStartedEvent(msg)
 
 	case *event.TrumpCallerFirstCardEvent:
-		h.handleTrumpCallerFirstCardEvent(msg.(*event.TrumpCallerFirstCardEvent))
+		h.handleTrumpCallerFirstCardEvent(msg)
 
 	case *event.DealCardEvent:
-		h.handleDealCardEvent(msg.(*event.DealCardEvent))
+		h.handleDealCardEvent(msg)
 
 	case *event.PlayedCardEvent:
-		h.handlePlayedCardEvent(msg.(*event.PlayedCardEvent))
+		h.handlePlayedCardEvent(msg)
 
 	case *event.TurnWinnerEvent:
-		h.handleTurnWinnerEvent(msg.(*event.TurnWinnerEvent))
+		h.handleTurnWinnerEvent(msg)
 	}
 
 	return nil
@@ -89,12 +89,12 @@ func (h *HokmBot) handleTurnWinnerEvent(e *event.TurnWinnerEvent) {
 }
 
 func (h *HokmBot) Respond(schema any) {
-	switch schema.(type) {
+	switch schema := schema.(type) {
 	case *response.SetTrumpResponse:
-		h.SetTrump(schema.(*response.SetTrumpResponse))
+		h.SetTrump(schema)
 
 	case *response.PlayCardResponse:
-		h.PlayCard(schema.(*response.PlayCardResponse))
+		h.PlayCard(schema)
 	}
 }
 

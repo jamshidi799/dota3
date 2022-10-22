@@ -8,6 +8,7 @@ import (
 	"game/model"
 	"log"
 	"math/rand"
+	"time"
 
 	"golang.org/x/exp/maps"
 )
@@ -122,6 +123,7 @@ func (h *handler) gameLoop() {
 
 			if player == h.game.getCurrentPlayer() {
 				log.Println("you should do random move here") // todo
+				time.Sleep(time.Second * 5)
 				return
 			}
 		}
