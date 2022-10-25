@@ -121,7 +121,8 @@ func (g *game) calculateTurnResult() (int, error) {
 		if maxCard.Suit == deskCard.Suit && maxCard.Rank < deskCard.Rank {
 			maxCard = deskCard
 			maxIndex = i + 1
-		} else if deskCard.Suit == g.trump && maxCard.Rank < deskCard.Rank {
+			// todo: fix this
+		} else if maxCard.Suit != g.trump && deskCard.Suit == g.trump {
 			maxCard = deskCard
 			maxIndex = i + 1
 		}
@@ -130,7 +131,6 @@ func (g *game) calculateTurnResult() (int, error) {
 	// get winner pos
 	winnerPos := (maxIndex + g.leaderPos) % 4
 
-	// Add score
 	winnerTeam := g.players[winnerPos].team
 	if winnerTeam == FirstTeam {
 		g.score.firstTeam += 1
@@ -138,11 +138,9 @@ func (g *game) calculateTurnResult() (int, error) {
 		g.score.secondTeam += 1
 	}
 
-	// set new leaderPos
 	g.leaderPos = winnerPos
 	g.turn = winnerPos
 
-	// refresh Desk
 	g.desk = model.NewDesk()
 
 	return winnerPos, nil
