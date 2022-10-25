@@ -1,6 +1,7 @@
 package match
 
 import (
+	"fmt"
 	"game/match/hokm"
 	"game/messenger/client"
 	"game/messenger/event"
@@ -8,14 +9,27 @@ import (
 )
 
 type Match struct {
-	Id      int
-	Type    model.MatchType
-	Clients client.Clients
+	Id       int
+	Type     model.MatchType
+	BotCount int
+	WinScore int
+	Clients  client.Clients
 }
 
-func NewMatch(t model.MatchType) *Match {
-	id := 1 // todo
-	return &Match{Id: id, Type: t, Clients: client.Clients{}}
+func NewMatch(id int, matchType model.MatchType, botCount int, winScore int) *Match {
+	match := &Match{
+		Id:       id,
+		Type:     matchType,
+		BotCount: botCount,
+		WinScore: winScore,
+		Clients:  client.Clients{},
+	}
+
+	for i := 0; i < botCount; i++ {
+		match.AddClient(client.NewBotClient(i+1, fmt.Sprint("bot", i+1)))
+	}
+
+	return match
 }
 
 func (m *Match) FindClient(clientId int) client.Client {

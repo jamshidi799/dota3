@@ -5,10 +5,10 @@ import (
 	"game/match"
 	"game/messenger/client"
 	"game/model"
+	"game/transport/http/request"
 	"game/util"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,32 +21,27 @@ var (
 func StartServer() error {
 	r := gin.Default()
 
-	r.POST("/user/signup", signup)
 	r.POST("/match", createMatch)
 	r.GET("/join", joinMatch)
-
-	matchType := model.MatchType{
-		PlayerCount: 4,
-		Type:        model.HOKM,
-	}
-
-	matches[0] = match.NewMatch(matchType)
 
 	return r.Run()
 }
 
-func signup(c *gin.Context) {
-	// todo
-}
-
 func createMatch(c *gin.Context) {
-	matchId := int(uuid.New().ID())
+	request := request.CreateMatchRequest{}
+	if err := c.BindJSON(&request); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	matchId := int(uuid.New().ID()) % 100
 	matchType := model.MatchType{
 		PlayerCount: 4,
 		Type:        model.HOKM,
 	}
 
-	matches[matchId] = match.NewMatch(matchType)
+	matches[matchId] = match.NewMatch(matchId, matchType, request.BotCount, request.WinScore)
+
 	c.JSON(http.StatusOK, gin.H{
 		"id": matchId,
 	})
@@ -63,12 +58,5 @@ func joinMatch(c *gin.Context) {
 	}
 
 	match := matches[matchId]
-
 	match.AddClient(client.NewUserClient(len(match.Clients), username, conn))
-	go func() {
-		time.Sleep(time.Second)
-		matches[0].AddClient(client.NewBotClient(1, "bot1"))
-		matches[0].AddClient(client.NewBotClient(3, "bot3"))
-		matches[0].AddClient(client.NewBotClient(2, "bot2"))
-	}()
 }

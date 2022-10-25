@@ -104,7 +104,7 @@ func (h *HokmBot) SetTrump(resp *response.SetTrumpResponse) {
 }
 
 func (h *HokmBot) PlayCard(resp *response.PlayCardResponse) {
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Second * 1)
 	var candide model.Card
 	if len(h.desk) == 0 {
 		for _, card := range h.hand {

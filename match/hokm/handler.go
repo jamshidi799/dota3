@@ -126,8 +126,8 @@ func (h *handler) gameLoop() {
 		}
 
 		turnWinner, _ := h.game.calculateTurnResult()
+		time.Sleep(time.Second * 2)
 		h.clients.BroadcastEvent(event.NewTurnWinnerEvent(turnWinner))
-		time.Sleep(time.Second * 5)
 	}
 }
 
