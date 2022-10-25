@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"game/messenger/client"
 	"game/util"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 func mustDialWS(t *testing.T, url string) *websocket.Conn {
@@ -30,7 +31,7 @@ func createHandler(t *testing.T, serverAddr string) *handler {
 		clients[i] = client
 	}
 
-	return NewHandler(clients)
+	return NewHandler(clients, 3)
 }
 
 func startServer() http.Handler {

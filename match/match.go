@@ -67,6 +67,6 @@ func (m *Match) shouldStartMatch() bool {
 }
 
 func (m *Match) start() {
-	handler := hokm.NewHandler(m.Clients)
+	handler := hokm.NewHandler(m.Clients, m.WinScore)
 	handler.Start()
 }

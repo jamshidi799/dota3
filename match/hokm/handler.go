@@ -16,25 +16,35 @@ import (
 const MaxRetryCount = 3
 
 type handler struct {
-	clients client.Clients
-	game    *game
+	winScore int
+	score    model.Score
+	clients  client.Clients
+	game     *game
 }
 
-func NewHandler(clients client.Clients) *handler {
-	return &handler{clients: clients}
+func NewHandler(clients client.Clients, winScore int) *handler {
+	return &handler{
+		winScore: winScore,
+		score:    model.NewScore(),
+		clients:  clients,
+	}
 }
 
 func (h *handler) Start() error {
 
-	h.initGame()
+	for h.score.GetMaxScore() < h.winScore {
+		h.initGame()
 
-	h.setTrumpCaller()
-	h.sendStartMatchEvent()
-	h.setTrump()
-	h.dealCards()
-	h.gameLoop()
+		h.setTrumpCaller()
+		h.sendStartMatchEvent()
+		h.setTrump()
+		h.dealCards()
+		h.gameLoop()
 
-	return h.endMatch()
+		h.endGame()
+	}
+
+	return nil
 }
 
 func (h *handler) initGame() {
@@ -131,14 +141,16 @@ func (h *handler) gameLoop() {
 	}
 }
 
-func (h *handler) endMatch() error {
+func (h *handler) endGame() error {
 	winnerTeam, err := h.game.getWinner()
 	if err != nil {
 		log.Println(err)
 		return err
 	} else {
+		h.score[int(winnerTeam)] += 1
 		log.Printf("team %d won", winnerTeam)
-		h.clients.BroadcastEvent(event.NewWinnerTeamEvent(h.game.score.firstTeam, h.game.score.secondTeam))
+		h.clients.BroadcastEvent(
+			event.NewWinnerTeamEvent(h.game.score[int(FirstTeam)], h.game.score[int(SecondTeam)]))
 	}
 
 	return nil

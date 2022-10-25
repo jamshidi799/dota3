@@ -13,7 +13,7 @@ type game struct {
 	turn      int
 	leaderPos int
 	trump     model.Suit
-	score     score
+	score     model.Score
 }
 
 func newGame(players [4]*player) *game {
@@ -133,9 +133,9 @@ func (g *game) calculateTurnResult() (int, error) {
 
 	winnerTeam := g.players[winnerPos].team
 	if winnerTeam == FirstTeam {
-		g.score.firstTeam += 1
+		g.score[int(FirstTeam)] += 1
 	} else {
-		g.score.secondTeam += 1
+		g.score[int(SecondTeam)] += 1
 	}
 
 	g.leaderPos = winnerPos
@@ -147,13 +147,13 @@ func (g *game) calculateTurnResult() (int, error) {
 }
 
 func (g *game) isGameEnded() bool {
-	return g.score.firstTeam == 7 || g.score.secondTeam == 7
+	return g.score[int(FirstTeam)] == 7 || g.score[int(SecondTeam)] == 7
 }
 
 func (g *game) getWinner() (team, error) {
-	if g.score.firstTeam == 7 {
+	if g.score[int(FirstTeam)] == 7 {
 		return FirstTeam, nil
-	} else if g.score.secondTeam == 7 {
+	} else if g.score[int(SecondTeam)] == 7 {
 		return SecondTeam, nil
 	}
 
