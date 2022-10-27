@@ -17,3 +17,15 @@ func (s *Score) GetMaxScore() int {
 
 	return max
 }
+
+func (s *Score) GetMinScore() int {
+	min := 1000
+
+	for _, v := range *s {
+		if min > v {
+			min = v
+		}
+	}
+
+	return min
+}

@@ -74,17 +74,17 @@ func NewTurnWinnerEvent(winnerPlayerPos int) *TurnWinnerEvent {
 	}
 }
 
-type WinnerTeamEvent struct {
+type GameWinnerEvent struct {
 	Meta *Metadata `json:"meta"`
 
-	FirstTeam  int `json:"firstTeam"`
-	SecondTeam int `json:"secondTeam"`
+	WinnerTeam int `json:"winnerTeam"`
+	Point      int `json:"point"`
 }
 
-func NewWinnerTeamEvent(firstTeam int, secondTeam int) *WinnerTeamEvent {
-	return &WinnerTeamEvent{
-		Meta:       newMetadata("winnerTeam"),
-		FirstTeam:  firstTeam,
-		SecondTeam: secondTeam,
+func NewGameWinnerEvent(winnerTeam, point int) *GameWinnerEvent {
+	return &GameWinnerEvent{
+		Meta:       newMetadata("gameWinner"),
+		WinnerTeam: winnerTeam,
+		Point:      point,
 	}
 }

@@ -12,3 +12,13 @@ func NewJoinPlayerEvent(playersUsername []string) *joinPlayerEvent {
 		Players: playersUsername,
 	}
 }
+
+type EndMatchEvent struct {
+	Meta *Metadata `json:"meta"`
+}
+
+func NewEndMatchEvent() *EndMatchEvent {
+	return &EndMatchEvent{
+		Meta: newMetadata("endMatch"),
+	}
+}

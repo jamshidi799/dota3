@@ -16,10 +16,12 @@ import (
 const MaxRetryCount = 3
 
 type handler struct {
-	winScore int
-	score    model.Score
-	clients  client.Clients
 	game     *game
+	clients  client.Clients
+	score    model.Score
+	winScore int
+	caller   int
+	players  [4]player
 }
 
 func NewHandler(clients client.Clients, winScore int) *handler {
@@ -32,40 +34,54 @@ func NewHandler(clients client.Clients, winScore int) *handler {
 
 func (h *handler) Start() error {
 
-	for h.score.GetMaxScore() < h.winScore {
-		h.initGame()
+	h.players = h.getPlayers()
+	isFirstGame := true
 
-		h.setTrumpCaller()
+	for {
+		h.initGame()
+		h.setTrumpCaller(isFirstGame)
 		h.sendStartMatchEvent()
 		h.setTrump()
 		h.dealCards()
 		h.gameLoop()
+		h.handleGameResult()
 
-		h.endGame()
+		if h.score.GetMaxScore() >= h.winScore {
+			h.clients.BroadcastEvent(event.NewEndMatchEvent())
+			break
+		}
+
+		isFirstGame = false
+
 	}
 
 	return nil
 }
 
 func (h *handler) initGame() {
-	players := h.getPlayers()
-	h.game = newGame(players)
+	h.game = newGame(h.players)
 	h.game.start()
 }
 
-func (h *handler) getPlayers() [4]*player {
-	var players [4]*player
+func (h *handler) getPlayers() [4]player {
+	var players [4]player
 
 	position := 0
 	for _, client := range h.clients {
-		players[position] = newPlayer(client.GetId(), client.GetUsername(), team(position%2), position, model.NewHand(), false)
+		players[position] = *newPlayer(client.GetId(), client.GetUsername(), team(position%2), position, model.NewHand(), false)
 		position += 1
 	}
 	return players
 }
 
-func (h *handler) setTrumpCaller() {
-	trumpCaller := rand.Intn(4)
+func (h *handler) setTrumpCaller(isFirstGame bool) {
+	var trumpCaller int
+	if isFirstGame {
+		trumpCaller = rand.Intn(4)
+	} else {
+		trumpCaller = h.caller
+	}
+
 	h.game.setTrumpCaller(trumpCaller)
 }
 
@@ -136,24 +152,47 @@ func (h *handler) gameLoop() {
 		}
 
 		turnWinner, _ := h.game.calculateTurnResult()
-		time.Sleep(time.Second * 2)
+		// time.Sleep(time.Second * 2)
 		h.clients.BroadcastEvent(event.NewTurnWinnerEvent(turnWinner))
 	}
 }
 
-func (h *handler) endGame() error {
+func (h *handler) handleGameResult() error {
 	winnerTeam, err := h.game.getWinner()
 	if err != nil {
 		log.Println(err)
 		return err
-	} else {
-		h.score[int(winnerTeam)] += 1
-		log.Printf("team %d won", winnerTeam)
-		h.clients.BroadcastEvent(
-			event.NewWinnerTeamEvent(h.game.score[int(FirstTeam)], h.game.score[int(SecondTeam)]))
 	}
 
+	point := h.calculateGamePoint(winnerTeam)
+	h.score[int(winnerTeam)] += point
+	h.clients.BroadcastEvent(event.NewGameWinnerEvent(int(winnerTeam), point))
+
+	h.setNextGameTrumpCaller(winnerTeam)
+
 	return nil
+}
+
+func (h *handler) calculateGamePoint(winnerTeam team) int {
+	if h.game.isHakemKotOccurred() {
+		if h.isCallerWin(winnerTeam) {
+			return 2
+		} else {
+			return 3
+		}
+	}
+
+	return 1
+}
+
+func (h *handler) setNextGameTrumpCaller(winnerTeam team) {
+	if !h.isCallerWin(winnerTeam) {
+		h.caller = (h.caller + 1) % 4
+	}
+}
+
+func (h *handler) isCallerWin(winnerTeam team) bool {
+	return h.players[h.caller].team == winnerTeam
 }
 
 // todo: convert any to something better

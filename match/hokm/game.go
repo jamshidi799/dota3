@@ -16,21 +16,22 @@ type game struct {
 	score     model.Score
 }
 
-func newGame(players [4]*player) *game {
+func newGame(players [4]player) *game {
 	// init deck
 	deck := model.NewDeck()
 
 	desk := model.NewDesk()
 
 	playerMap := map[int]*player{}
-	for _, player := range players {
-		playerMap[player.Position] = player
+	for i := range players {
+		playerMap[players[i].Position] = &players[i]
 	}
 
 	return &game{
 		deck:    deck,
 		desk:    desk,
 		players: playerMap,
+		score:   model.NewScore(),
 	}
 }
 
@@ -162,4 +163,8 @@ func (g *game) getWinner() (team, error) {
 
 func (g *game) getCurrentPlayer() *player {
 	return g.players[g.turn]
+}
+
+func (g *game) isHakemKotOccurred() bool {
+	return g.score.GetMinScore() == 0
 }

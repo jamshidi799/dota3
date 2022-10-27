@@ -26,7 +26,7 @@ func NewMatch(id int, matchType model.MatchType, botCount int, winScore int) *Ma
 	}
 
 	for i := 0; i < botCount; i++ {
-		match.AddClient(client.NewBotClient(i+1, fmt.Sprint("bot", i+1)))
+		match.AddClient(client.NewBotClient(i, fmt.Sprint("bot", i+1)))
 	}
 
 	return match

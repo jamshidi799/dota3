@@ -24,6 +24,14 @@ func StartServer() error {
 	r.POST("/match", createMatch)
 	r.GET("/join", joinMatch)
 
+	matchId := int(uuid.New().ID()) % 100
+	matchType := model.MatchType{
+		PlayerCount: 4,
+		Type:        model.HOKM,
+	}
+
+	matches[matchId] = match.NewMatch(matchId, matchType, 4, 4)
+
 	return r.Run()
 }
 
